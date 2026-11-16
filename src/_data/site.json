@@ -1,0 +1,34 @@
+{
+  "name": "URE Marília — Caderno da Rede",
+  "shortName": "URE Marília",
+  "tagline": "O território educativo de Marília, camada por camada.",
+  "description": "Blog institucional da Unidade Regional de Ensino de Marília. Notícias, formações, materiais e comunicados da rede estadual de ensino.",
+  "url": "https://bloguremar.vercel.app",
+  "email": "ure.marilia@educacao.sp.gov.br",
+  "telefone": "(14) 3402-XXXX",
+  "endereco": "Marília — SP",
+  "cidade": "Marília",
+  "estado": "SP",
+  "pais": "Brasil",
+  "demo": true,
+  "demoAviso": "Conteúdo de demonstração — dados fictícios, sem nomes reais de escolas, sem fotos de estudantes.",
+  "redes": {
+    "instagram": "https://instagram.com/ure.marilia",
+    "facebook": "https://facebook.com/ure.marilia",
+    "youtube": "https://youtube.com/ure.marilia"
+  },
+  "menu": [
+    { "label": "Início", "href": "/" },
+    { "label": "Notícias", "href": "/noticias/" },
+    { "label": "Formações", "href": "/formacoes/" },
+    { "label": "Materiais", "href": "/materiais/" },
+    { "label": "Escolas", "href": "/escolas/" },
+    { "label": "Sobre", "href": "/sobre/" }
+  ],
+  "utilidades": [
+    { "label": "Acessibilidade", "href": "/acessibilidade/" },
+    { "label": "LGPD / Privacidade", "href": "/privacidade/" },
+    { "label": "Transparência", "href": "/" },
+    { "label": "Ouvidoria", "href": "mailto:ouvidoria.ure@educacao.sp.gov.br" }
+  ]
+}

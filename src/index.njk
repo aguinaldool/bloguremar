@@ -1,0 +1,89 @@
+---
+layout: layouts/base.njk
+title: "URE Marília — Caderno da Rede"
+description: "Blog institucional da Unidade Regional de Ensino de Marília."
+bodyClass: "home"
+permalink: /
+---
+
+{% set featured = collections.featured | first %}
+{% set recent = collections.posts %}
+
+<header class="hero">
+  <div class="hero-bg">
+    <svg class="network-svg" viewBox="0 0 1200 500" preserveAspectRatio="none" aria-hidden="true">
+      <line x1="100" y1="420" x2="350" y2="180" stroke="#2563EB" stroke-width="2" opacity="0.12"/>
+      <line x1="350" y1="180" x2="620" y2="340" stroke="#2563EB" stroke-width="2" opacity="0.12"/>
+      <line x1="620" y1="340" x2="900" y2="140" stroke="#0D9488" stroke-width="2" opacity="0.12"/>
+      <line x1="900" y1="140" x2="1150" y2="400" stroke="#0D9488" stroke-width="2" opacity="0.12"/>
+      <circle cx="350" cy="180" r="6" fill="#2563EB" opacity="0.2"/>
+      <circle cx="620" cy="340" r="6" fill="#2563EB" opacity="0.2"/>
+      <circle cx="900" cy="140" r="6" fill="#0D9488" opacity="0.2"/>
+    </svg>
+  </div>
+  <div class="hero-content">
+    {% if featured %}
+    <div class="hero-kicker"><span>{{ featured.data.categoria | sectionLabel }}</span> · Destaque</div>
+    <h1><a href="{{ featured.url }}" style="color:inherit;text-decoration:none;">{{ featured.data.title }}</a></h1>
+    <p class="hero-lede">{{ featured.data.resumo }}</p>
+    <div class="hero-actions">
+      <a href="{{ featured.url }}" class="btn btn-primary">Ler notícia <svg class="ic ic-sm" aria-hidden="true"><use href="#i-arr-r"/></svg></a>
+      <a href="/noticias/" class="btn btn-outline">Ver todas</a>
+    </div>
+    {% else %}
+    <div class="hero-kicker"><span>{{ site.shortName }}</span></div>
+    <h1>{{ site.tagline }}</h1>
+    <p class="hero-lede">{{ site.description }}</p>
+    {% endif %}
+  </div>
+</header>
+
+<section class="section-sm">
+  <div class="container">
+    <div class="list-header">
+      <h2 class="list-title">Últimas publicações</h2>
+      <a href="/noticias/" class="btn btn-outline btn-sm">Ver todas <svg class="ic ic-sm" aria-hidden="true"><use href="#i-arr-r"/></svg></a>
+    </div>
+    <div class="grid grid-3">
+      {% for p in recent %}
+      {% if loop.index <= 6 %}
+      <article class="card">
+        <div class="card-image">
+          <svg class="network-svg" viewBox="0 0 400 200" preserveAspectRatio="none" style="width:100%;height:100%;background:#F1F5FA;" aria-hidden="true">
+            <line x1="40" y1="160" x2="360" y2="60" stroke="{{ p.data.categoria | sectionColor }}" stroke-width="2" opacity="0.2"/>
+            <circle cx="360" cy="60" r="5" fill="{{ p.data.categoria | sectionColor }}" opacity="0.3"/>
+            <circle cx="200" cy="120" r="4" fill="{{ p.data.categoria | sectionColor }}" opacity="0.2"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span>{{ p.date | dateBR }}</span>
+            <span>·</span>
+            <span style="color:{{ p.data.categoria | sectionColor }}">{{ p.data.categoria | sectionLabel }}</span>
+          </div>
+          <h3 class="card-title"><a href="{{ p.url }}">{{ p.data.title }}</a></h3>
+          <p class="card-excerpt">{{ p.data.resumo }}</p>
+        </div>
+      </article>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-2">
+      <div class="card"><div class="card-body">
+        <h3 style="font-size:var(--text-xl);margin:0 0 .5rem;">Formações</h3>
+        <p class="card-excerpt">Inscrições e encontros para professores e gestores da rede estadual.</p>
+        <a href="/formacoes/" class="btn btn-outline btn-sm">Ver formações</a>
+      </div></div>
+      <div class="card"><div class="card-body">
+        <h3 style="font-size:var(--text-xl);margin:0 0 .5rem;">Materiais</h3>
+        <p class="card-excerpt">Guias e orientações pedagógicas para a sala de aula.</p>
+        <a href="/materiais/" class="btn btn-outline btn-sm">Ver materiais</a>
+      </div></div>
+    </div>
+  </div>
+</section>

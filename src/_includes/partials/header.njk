@@ -1,0 +1,41 @@
+<header class="site-header" role="banner">
+  <div class="header-wrap">
+    <div class="header-bar">
+      <a class="logo" href="/" aria-label="{{ site.name }} — página inicial">
+        <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <circle cx="16" cy="16" r="5" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <circle cx="16" cy="16" r="1.5" fill="currentColor"/>
+          <path d="M11.5 11.5a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+          <path d="M20.5 20.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+        </svg>
+        <span class="logo-text">{{ site.shortName }}</span>
+      </a>
+
+      <button class="nav-toggle" aria-expanded="false" aria-controls="menu-principal" aria-label="Abrir menu">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
+    </div>
+
+    <nav class="site-nav" id="menu-principal">
+      <ul class="nav-list">
+        {% for item in site.menu %}
+        <li><a href="{{ item.href }}"{% if item.href == page.url %} aria-current="page"{% endif %}>{{ item.label }}</a></li>
+        {% endfor %}
+      </ul>
+      <div class="nav-utils">
+        <a class="btn btn-sm" href="/busca/" aria-label="Buscar"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>Buscar</a>
+        {% for item in site.utilidades %}
+        <a class="nav-link-sm" href="{{ item.href }}">{{ item.label }}</a>
+        {% endfor %}
+      </div>
+    </nav>
+  </div>
+
+  {% if site.demo %}
+  <div class="demo-banner" role="status" aria-live="polite">
+    <strong>Aviso:</strong> {{ site.demoAviso }}
+  </div>
+  {% endif %}
+</header>

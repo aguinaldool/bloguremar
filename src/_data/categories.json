@@ -1,0 +1,7 @@
+[
+  { "nome": "Notícias", "slug": "noticias", "cor": "#2563EB", "icone": "noticia", "descricao": "Notícias da rede de ensino de Marília e região." },
+  { "nome": "Comunicados", "slug": "comunicados", "cor": "#E86454", "icone": "comunicado", "descricao": "Comunicados oficiais e avisos importantes." },
+  { "nome": "Formações", "slug": "formacoes", "cor": "#0D9488", "icone": "formacao", "descricao": "Formações continuadas e eventos para professores e gestores." },
+  { "nome": "Materiais", "slug": "materiais", "cor": "#D97706", "icone": "material", "descricao": "Materiais didáticos e orientações para a sala de aula." },
+  { "nome": "Projetos", "slug": "projetos", "cor": "#7C3AED", "icone": "projeto", "descricao": "Projetos desenvolvidos pelas escolas da URE." }
+]

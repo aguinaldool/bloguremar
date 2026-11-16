@@ -1,0 +1,19 @@
+{
+  "name": "blog-ure-marilia",
+  "version": "1.0.0",
+  "description": "Blog institucional da URE Marília — Unidade Regional de Ensino de Marília",
+  "private": true,
+  "scripts": {
+    "start": "eleventy --serve",
+    "build": "eleventy && node scripts/pagefind.js",
+    "export:content": "node scripts/export-content.js"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^2.0.0",
+    "@11ty/eleventy-plugin-rss": "^1.2.0",
+    "pagefind": "^1.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

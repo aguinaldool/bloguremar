@@ -1,0 +1,49 @@
+---
+layout: layouts/base.njk
+---
+{% set pageTitle = title + " | " + site.shortName %}
+{% set pageDesc = resumo %}
+{% set bodyClass = "post" %}
+
+<article class="article">
+  <header class="article-header">
+    <div class="article-meta">
+      <svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg>
+      <time datetime="{{ page.date | dateISO }}">{{ page.date | dateBR }}</time>
+      <span>·</span>
+      <span style="color:{{ categoria | sectionColor }}">{{ categoria | sectionLabel }}</span>
+      {% if autor %}<span>·</span><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg><span>{{ autor }}</span>{% endif %}
+      <span>·</span>
+      <span>{{ content | readingTime }} min de leitura</span>
+    </div>
+
+    <span class="article-category" style="background:{{ categoria | sectionColor }};">{{ categoria | sectionLabel }}</span>
+    <h1 class="article-title">{{ title }}</h1>
+    <p class="article-resumo">{{ resumo }}</p>
+
+    {% if tags and tags.length %}
+    <div class="tags">
+      {% for tag in tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+    </div>
+    {% endif %}
+  </header>
+
+  <div class="article-cover">
+    <svg class="network-svg" viewBox="0 0 1000 400" preserveAspectRatio="none" style="width:100%;height:100%;">
+      <rect width="100%" height="100%" fill="#F1F5FA"/>
+      <line x1="60" y1="360" x2="320" y2="80" stroke="{{ categoria | sectionColor }}" stroke-width="3" opacity="0.25"/>
+      <line x1="320" y1="80" x2="680" y2="300" stroke="{{ categoria | sectionColor }}" stroke-width="3" opacity="0.25"/>
+      <line x1="680" y1="300" x2="960" y2="60" stroke="{{ categoria | sectionColor }}" stroke-width="3" opacity="0.25"/>
+      <circle cx="320" cy="80" r="7" fill="{{ categoria | sectionColor }}" opacity="0.35"/>
+      <circle cx="680" cy="300" r="7" fill="{{ categoria | sectionColor }}" opacity="0.35"/>
+      <circle cx="120" cy="320" r="5" fill="{{ categoria | sectionColor }}" opacity="0.2"/>
+      <circle cx="880" cy="120" r="5" fill="{{ categoria | sectionColor }}" opacity="0.2"/>
+    </svg>
+  </div>
+
+  <div class="article-body">
+    {{ content | safe }}
+  </div>
+
+  <p style="margin-top:2rem;"><a href="/noticias/" class="btn btn-outline btn-sm"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-arr-l"/></svg> Voltar para notícias</a></p>
+</article>

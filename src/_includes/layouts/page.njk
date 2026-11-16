@@ -1,0 +1,14 @@
+---
+layout: layouts/base.njk
+---
+{% set pageTitle = title + " | " + site.shortName %}
+{% set bodyClass = "page" %}
+
+<article class="article">
+  <header class="article-header">
+    <h1 class="article-title">{{ title }}</h1>
+  </header>
+  <div class="article-body">
+    {{ content | safe }}
+  </div>
+</article>

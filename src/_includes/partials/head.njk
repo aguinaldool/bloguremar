@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ pageTitle | default(site.name) }}</title>
+  <meta name="description" content="{{ pageDesc | default(site.description) }}">
+  <meta name="theme-color" content="#F5F8FC">
+  <link rel="canonical" href="{{ canonicalUrl | default(site.url) }}">
+  <link rel="alternate" type="application/rss+xml" title="{{ site.name }}" href="{{ site.url }}/feed.xml">
+  <link rel="sitemap" href="{{ site.url }}/sitemap.xml">
+  <link rel="icon" type="image/svg+xml" href="{{ site.url }}/assets/icons/favicon.svg">
+  <link rel="preload" as="style" href="{{ site.url }}/assets/css/main.css">
+  <link rel="stylesheet" href="{{ site.url }}/assets/css/main.css">
+  {% if pageJsonLd %}<script type="application/ld+json">{{ pageJsonLd | safe }}</script>{% endif %}
+  {% if pageNoindex %}<meta name="robots" content="noindex">{% endif %}
+</head>
+<body class="{{ bodyClass | default('') }} {{ demoClass | default('') }}" data-demo="{{ site.demo | default(false) }}">
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
