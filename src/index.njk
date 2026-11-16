@@ -28,7 +28,6 @@ permalink: /
     <p class="hero-lede">{{ featured.data.resumo }}</p>
     <div class="hero-actions">
       <a href="{{ featured.url }}" class="btn btn-primary">Ler notícia <svg class="ic ic-sm" aria-hidden="true"><use href="#i-arr-r"/></svg></a>
-      <a href="/noticias/" class="btn btn-outline">Ver todas</a>
     </div>
     {% else %}
     <div class="hero-kicker"><span>{{ site.shortName }}</span></div>
@@ -42,7 +41,6 @@ permalink: /
   <div class="container">
     <div class="list-header">
       <h2 class="list-title">Últimas publicações</h2>
-      <a href="/noticias/" class="btn btn-outline btn-sm">Ver todas <svg class="ic ic-sm" aria-hidden="true"><use href="#i-arr-r"/></svg></a>
     </div>
     <div class="grid grid-3">
       {% for p in recent %}
@@ -71,19 +69,4 @@ permalink: /
   </div>
 </section>
 
-<section class="section">
-  <div class="container">
-    <div class="grid grid-2">
-      <div class="card"><div class="card-body">
-        <h3 style="font-size:var(--text-xl);margin:0 0 .5rem;">Formações</h3>
-        <p class="card-excerpt">Inscrições e encontros para professores e gestores da rede estadual.</p>
-        <a href="/formacoes/" class="btn btn-outline btn-sm">Ver formações</a>
-      </div></div>
-      <div class="card"><div class="card-body">
-        <h3 style="font-size:var(--text-xl);margin:0 0 .5rem;">Materiais</h3>
-        <p class="card-excerpt">Guias e orientações pedagógicas para a sala de aula.</p>
-        <a href="/materiais/" class="btn btn-outline btn-sm">Ver materiais</a>
-      </div></div>
-    </div>
-  </div>
-</section>
+

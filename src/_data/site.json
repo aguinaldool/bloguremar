@@ -17,18 +17,6 @@
     "facebook": "https://facebook.com/ure.marilia",
     "youtube": "https://youtube.com/ure.marilia"
   },
-  "menu": [
-    { "label": "Início", "href": "/" },
-    { "label": "Notícias", "href": "/noticias/" },
-    { "label": "Formações", "href": "/formacoes/" },
-    { "label": "Materiais", "href": "/materiais/" },
-    { "label": "Escolas", "href": "/escolas/" },
-    { "label": "Sobre", "href": "/sobre/" }
-  ],
-  "utilidades": [
-    { "label": "Acessibilidade", "href": "/acessibilidade/" },
-    { "label": "LGPD / Privacidade", "href": "/privacidade/" },
-    { "label": "Transparência", "href": "/" },
-    { "label": "Ouvidoria", "href": "mailto:ouvidoria.ure@educacao.sp.gov.br" }
-  ]
+  "menu": [],
+  "utilidades": []
 }
