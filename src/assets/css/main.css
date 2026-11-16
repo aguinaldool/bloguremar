@@ -265,3 +265,64 @@
 .toast.is-danger {
   background: var(--color-danger);
 }
+
+/* Layout com sidebar de tags */
+.layout-with-sidebar {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .layout-with-sidebar {
+    grid-template-columns: 1fr;
+  }
+}
+.tags-sidebar {
+  position: sticky;
+  top: 84px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+}
+.tags-sidebar h3 {
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 var(--space-4) 0;
+  color: var(--color-ink);
+}
+.tags-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+.tag-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: var(--space-2);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface-alt);
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  text-align: center;
+  line-height: 1.2;
+}
+.tag-btn:hover, .tag-btn.active {
+  border-color: var(--color-blue);
+  color: var(--color-blue);
+  background: #fff;
+}
+.tag-btn .count { color: var(--color-muted); font-weight: 500; }
+.tags-clear-btn { margin-top: var(--space-3); width: 100%; }
+.card.is-hidden { display: none; }
+.posts-empty-filter { padding: var(--space-8); text-align: center; color: var(--color-muted); border: 1px dashed var(--color-line); border-radius: var(--radius-lg); }

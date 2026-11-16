@@ -1,0 +1,270 @@
+---
+permalink: /admin/index.html
+eleventyExcludeFromCollections: true
+---
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — URE Marília</title>
+<style>
+:root{--bg:#F5F8FC;--surface:#fff;--line:#D7E0EA;--ink:#0E1F35;--muted:#7A8FA8;--blue:#2563EB;--teal:#0D9488;--amber:#D97706;--coral:#E86454;--violet:#7C3AED;--radius:14px;--font:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;--mono:ui-monospace,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.5}
+a{color:var(--blue)}button,input,select,textarea{font:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:20px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 10px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;font-weight:600;font-size:13px}
+.btn:hover{border-color:#94a3b8}.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-danger{color:#dc2626;border-color:#fecaca}.btn-sm{padding:6px 10px;font-size:12px}
+.grid{display:grid;grid-template-columns:320px 1fr;gap:16px}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;max-height:70vh;overflow:auto}
+.item{border:1px solid var(--line);border-radius:10px;padding:10px;cursor:pointer}
+.item:hover{border-color:#94a3b8}.item.active{border-color:var(--blue);background:#f8fbff}
+.item-title{font-weight:700;font-size:14px;margin:0 0 4px}.item-meta{font-size:12px;color:var(--muted)}
+.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.field input[type=text],.field input[type=date],.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.field textarea{min-height:180px;font-family:var(--mono);font-size:13px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tags-hint{font-size:12px;color:var(--muted);margin-top:4px}
+.search{margin-bottom:10px}.search input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:#eef2ff;color:var(--blue);font-weight:700}
+.notice{font-size:13px;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin-bottom:14px}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:120px}
+.stat b{display:block;font-size:20px}.stat span{font-size:12px;color:var(--muted)}
+.hidden{display:none}
+.toast{position:fixed;right:16px;bottom:16px;background:#0E1F35;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Admin — Caderno da Rede</h1>
+      <div style="font-size:13px;color:var(--muted)">Gerencie publicações (armazenamento local do navegador). Exporte JSON para publicar no site.</div>
+    </div>
+    <div class="bar" style="margin:0">
+      <a class="btn" href="/" target="_blank">Ver site</a>
+      <button class="btn" id="btnExport">Exportar JSON</button>
+      <button class="btn" id="btnImport">Importar JSON</button>
+      <button class="btn" id="btnReset">Restaurar demo</button>
+      <input type="file" id="fileInput" accept="application/json" class="hidden">
+    </div>
+  </div>
+
+  <div class="notice"><strong>Nota:</strong> Este admin salva no <code>localStorage</code> deste navegador (como no modelo original). Para publicar no site estático, exporte o JSON e converta/publicue os posts no repositório, ou integre com Supabase/GitHub na Fase 2. Para usar em <code>blogeducamar.vercel.app</code>, conecte esse domínio ao mesmo projeto Vercel deste repositório ou publique este arquivo lá.</div>
+
+  <div class="stats">
+    <div class="stat"><b id="stPosts">0</b><span>publicações</span></div>
+    <div class="stat"><b id="stTags">0</b><span>tags únicas</span></div>
+    <div class="stat"><b id="stDrafts">0</b><span>rascunhos</span></div>
+  </div>
+
+  <div class="grid">
+    <aside class="card">
+      <h2>Publicações</h2>
+      <div class="search"><input type="text" id="search" placeholder="Buscar por título ou tag"></div>
+      <div class="bar"><button class="btn btn-primary btn-sm" id="btnNew">Nova publicação</button></div>
+      <ul class="list" id="list"></ul>
+    </aside>
+
+    <main class="card">
+      <h2 id="formTitle">Editor</h2>
+      <form id="form">
+        <input type="hidden" id="postId">
+        <div class="field"><label for="title">Título</label><input type="text" id="title" required></div>
+        <div class="field"><label for="resumo">Resumo</label><input type="text" id="resumo"></div>
+        <div class="row">
+          <div class="field"><label for="categoria">Categoria/Tipo</label>
+            <select id="categoria">
+              <option value="noticia">Notícia</option>
+              <option value="comunicado">Comunicado</option>
+              <option value="formacao">Formação</option>
+              <option value="material">Material</option>
+              <option value="projeto">Projeto</option>
+              <option value="evento">Evento</option>
+            </select>
+          </div>
+          <div class="field"><label for="data">Data</label><input type="date" id="data"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="autor">Autor</label><input type="text" id="autor" value="Equipe URE Marília"></div>
+          <div class="field"><label for="status">Status</label>
+            <select id="status"><option value="published">Publicado</option><option value="draft">Rascunho</option></select>
+          </div>
+        </div>
+        <div class="field"><label for="tags">Tags (separadas por vírgula)</label><input type="text" id="tags" placeholder="ex: leitura, professores, formação"><div class="tags-hint">As tags aparecem no menu lateral do site.</div></div>
+        <div class="field"><label><input type="checkbox" id="destaque"> Destaque na página inicial</label></div>
+        <div class="field"><label for="conteudo">Conteúdo (Markdown)</label><textarea id="conteudo" placeholder="Escreva o conteúdo em Markdown..."></textarea></div>
+        <div class="bar">
+          <button type="submit" class="btn btn-primary">Salvar</button>
+          <button type="button" class="btn btn-danger" id="btnDelete">Excluir</button>
+          <button type="button" class="btn" id="btnDuplicate">Duplicar</button>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+  var KEY = 'ure_blog_posts_v1';
+  var seed = [
+    {id:uid(),title:'Mostra de Projetos de Vida reúne escolas da URE Marília',resumo:'Estudantes apresentam projetos de autonomia e protagonismo desenvolvidos ao longo do ano letivo.',categoria:'projeto',tipo:'noticia',tags:['projetos-de-vida','estudantes','mostra'],destaque:true,data:'2026-10-20',autor:'Equipe de Comunicação',status:'published',demo:true,conteudo:'A Mostra de Projetos de Vida aconteceu no último sábado e reuniu estudantes de diferentes escolas da rede estadual de Marília.'},
+    {id:uid(),title:'Avaliação formativa na prática: inscrições abertas',resumo:'Formação para professores da rede sobre estratégias de avaliação formativa em sala de aula.',categoria:'formacao',tipo:'formacao',tags:['avaliacao','formacao','professores'],destaque:false,data:'2026-10-18',autor:'Núcleo de Formação',status:'published',demo:true,conteudo:'Inscrições abertas para a formação "Avaliação formativa na prática".'},
+    {id:uid(),title:'Orientações para o fechamento do 4º bimestre',resumo:'Calendário e procedimentos para encerramento do último bimestre do ano letivo.',categoria:'noticia',tipo:'comunicado',tags:['bimestre','calendario','procedimentos'],destaque:false,data:'2026-10-15',autor:'Coordenação de Ensino',status:'published',demo:true,conteudo:'A URE Marília divulgou as orientações para o fechamento do 4º bimestre.'},
+    {id:uid(),title:'Guia de recomposição da aprendizagem — Língua Portuguesa',resumo:'Orientações para professores trabalharem a recomposição de conteúdos de Língua Portuguesa.',categoria:'material',tipo:'material',tags:['recomposicao','lingua-portuguesa','guia','professores'],destaque:false,data:'2026-10-12',autor:'Núcleo de Formação',status:'published',demo:true,conteudo:'Foi publicado o Guia de Recomposição da Aprendizagem em Língua Portuguesa.'},
+    {id:uid(),title:'Encontro regional de leitura reúne professores da rede',resumo:'Evento discutiu práticas de incentivo à leitura em sala de aula e bibliotecas escolares.',categoria:'evento',tipo:'evento',tags:['leitura','encontro','professores','biblioteca'],destaque:false,data:'2026-10-09',autor:'Equipe de Comunicação',status:'published',demo:true,conteudo:'Professores participaram do Encontro Regional de Leitura.'},
+    {id:uid(),title:'Clube de leitura circula entre escolas de Marília e região',resumo:'Projeto leva encontros de leitura para diferentes escolas da rede estadual.',categoria:'projeto',tipo:'projeto',tags:['clube-de-leitura','projeto','escolas'],destaque:false,data:'2026-10-05',autor:'Equipe de Comunicação',status:'published',demo:true,conteudo:'O Clube de Leitura da URE Marília está circulando por escolas da rede estadual.'},
+    {id:uid(),title:'Encontro de gestores e coordenadores pedagógicos',resumo:'Reunião mensal da URE com diretores e coordenadores das escolas da região.',categoria:'noticia',tipo:'noticia',tags:['gestores','coordenadores','reuniao'],destaque:false,data:'2026-10-02',autor:'Coordenação de Ensino',status:'published',demo:true,conteudo:'A URE Marília promoveu o encontro mensal de gestores e coordenadores pedagógicos.'},
+    {id:uid(),title:'Acolhimento: o primeiro dia também ensina',resumo:'Reflexão sobre a importância do acolhimento de estudantes no início do ano letivo.',categoria:'noticia',tipo:'noticia',tags:['acolhimento','inicio-do-ano','estudantes'],destaque:false,data:'2026-09-28',autor:'Equipe de Comunicação',status:'published',demo:true,conteudo:'O primeiro dia de aula é mais do que entrega de materiais e organização de carteiras.'}
+  ];
+
+  function uid(){ return 'p_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+  function load(){ try{ var raw=localStorage.getItem(KEY); if(!raw){ save(seed); return seed.slice(); } return JSON.parse(raw)||[]; }catch(e){ return seed.slice(); } }
+  function save(posts){ localStorage.setItem(KEY, JSON.stringify(posts)); }
+  function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show')},2200); }
+  function slugify(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+
+  var posts = load();
+  var currentId = null;
+
+  function allTags(){
+    var set={};
+    posts.forEach(function(p){ (p.tags||[]).forEach(function(t){ set[t]=(set[t]||0)+1; }); });
+    return Object.keys(set);
+  }
+  function stats(){
+    document.getElementById('stPosts').textContent = posts.length;
+    document.getElementById('stTags').textContent = allTags().length;
+    document.getElementById('stDrafts').textContent = posts.filter(function(p){return p.status==='draft';}).length;
+  }
+
+  function renderList(){
+    var q = (document.getElementById('search').value||'').toLowerCase();
+    var list = document.getElementById('list');
+    list.innerHTML = '';
+    var filtered = posts.slice().sort(function(a,b){ return (b.data||'').localeCompare(a.data||''); }).filter(function(p){
+      if(!q) return true;
+      return (p.title||'').toLowerCase().indexOf(q)!==-1 || (p.tags||[]).join(' ').toLowerCase().indexOf(q)!==-1;
+    });
+    filtered.forEach(function(p){
+      var li = document.createElement('li');
+      li.className = 'item' + (p.id===currentId?' active':'');
+      li.innerHTML = '<div class="item-title">'+esc(p.title||'(sem título)')+'</div><div class="item-meta">'+esc(p.data||'')+' · '+esc(p.categoria||'')+' · <span class="pill">'+esc(p.status||'')+'</span></div>';
+      li.onclick = function(){ select(p.id); };
+      list.appendChild(li);
+    });
+    if(!filtered.length){ list.innerHTML = '<li class="item-meta">Nenhuma publicação.</li>'; }
+    stats();
+  }
+  function esc(s){ return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+  function select(id){
+    var p = posts.find(function(x){return x.id===id;});
+    if(!p) return;
+    currentId = id;
+    document.getElementById('postId').value = p.id;
+    document.getElementById('title').value = p.title||'';
+    document.getElementById('resumo').value = p.resumo||'';
+    document.getElementById('categoria').value = p.categoria||'noticia';
+    document.getElementById('data').value = p.data||'';
+    document.getElementById('autor').value = p.autor||'';
+    document.getElementById('status').value = p.status||'published';
+    document.getElementById('tags').value = (p.tags||[]).join(', ');
+    document.getElementById('destaque').checked = !!p.destaque;
+    document.getElementById('conteudo').value = p.conteudo||'';
+    document.getElementById('formTitle').textContent = 'Editar publicação';
+    renderList();
+  }
+
+  function clearForm(){
+    currentId = null;
+    document.getElementById('form').reset();
+    document.getElementById('postId').value = '';
+    document.getElementById('data').value = new Date().toISOString().slice(0,10);
+    document.getElementById('formTitle').textContent = 'Nova publicação';
+    renderList();
+  }
+
+  document.getElementById('btnNew').onclick = clearForm;
+  document.getElementById('search').oninput = renderList;
+
+  document.getElementById('form').onsubmit = function(e){
+    e.preventDefault();
+    var data = {
+      id: document.getElementById('postId').value || uid(),
+      title: document.getElementById('title').value.trim(),
+      resumo: document.getElementById('resumo').value.trim(),
+      categoria: document.getElementById('categoria').value,
+      tipo: document.getElementById('categoria').value,
+      data: document.getElementById('data').value,
+      autor: document.getElementById('autor').value.trim(),
+      status: document.getElementById('status').value,
+      tags: document.getElementById('tags').value.split(',').map(function(s){return slugify(s.trim())||s.trim();}).filter(Boolean),
+      destaque: document.getElementById('destaque').checked,
+      conteudo: document.getElementById('conteudo').value,
+      slug: slugify(document.getElementById('title').value),
+      demo: true
+    };
+    if(!data.title){ toast('Informe um título.'); return; }
+    var idx = posts.findIndex(function(p){return p.id===data.id;});
+    if(idx>=0) posts[idx]=Object.assign({}, posts[idx], data); else posts.unshift(data);
+    save(posts); currentId = data.id; renderList(); select(data.id); toast('Publicação salva.');
+  };
+
+  document.getElementById('btnDelete').onclick = function(){
+    if(!currentId){ toast('Selecione uma publicação.'); return; }
+    if(!confirm('Excluir esta publicação?')) return;
+    posts = posts.filter(function(p){return p.id!==currentId;});
+    save(posts); clearForm(); toast('Publicação excluída.');
+  };
+
+  document.getElementById('btnDuplicate').onclick = function(){
+    if(!currentId){ toast('Selecione uma publicação.'); return; }
+    var p = posts.find(function(x){return x.id===currentId;});
+    if(!p) return;
+    var copy = JSON.parse(JSON.stringify(p));
+    copy.id = uid(); copy.title = p.title + ' (cópia)'; copy.slug = slugify(copy.title); copy.status='draft';
+    posts.unshift(copy); save(posts); renderList(); select(copy.id); toast('Publicação duplicada.');
+  };
+
+  document.getElementById('btnExport').onclick = function(){
+    var blob = new Blob([JSON.stringify({exportedAt:new Date().toISOString(),posts:posts}, null, 2)], {type:'application/json'});
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'blog-ure-posts.json'; a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);},1000); toast('JSON exportado.');
+  };
+
+  document.getElementById('btnImport').onclick = function(){ document.getElementById('fileInput').click(); };
+  document.getElementById('fileInput').onchange = function(e){
+    var file = e.target.files[0]; if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try{
+        var data = JSON.parse(reader.result);
+        var arr = Array.isArray(data) ? data : (data.posts||[]);
+        if(!arr.length){ toast('Nenhuma publicação no arquivo.'); return; }
+        posts = arr.map(function(p){ p.id = p.id || uid(); p.tags = p.tags||[]; return p; });
+        save(posts); clearForm(); toast('Importação concluída.');
+      }catch(err){ toast('Arquivo inválido.'); }
+    };
+    reader.readAsText(file);
+    e.target.value='';
+  };
+
+  document.getElementById('btnReset').onclick = function(){
+    if(!confirm('Restaurar os 8 posts de demonstração? Isso substituirá os dados locais.')) return;
+    posts = JSON.parse(JSON.stringify(seed)); posts.forEach(function(p){p.id=uid();}); save(posts); clearForm(); toast('Demo restaurada.');
+  };
+
+  clearForm();
+  renderList();
+})();
+</script>
+</body>
+</html>
