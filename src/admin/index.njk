@@ -61,12 +61,13 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
 
   <div id="loginView" class="login card">
     <h2>Entrar</h2>
-    <p class="muted">Use e-mail e senha. Em modo demonstração, o acesso local é liberado com qualquer usuário criado nesta tela (armazenado no navegador). Com Supabase configurado, usa autenticação real.</p>
+    <p class="muted" id="loginHint">Use e-mail e senha. Em modo demonstração, o acesso local é liberado com qualquer usuário criado nesta tela (armazenado no navegador). Com Supabase configurado, usa autenticação real.</p>
     <div class="field"><label for="loginEmail">E-mail</label><input type="email" id="loginEmail" autocomplete="username"></div>
     <div class="field"><label for="loginPass">Senha</label><input type="password" id="loginPass" autocomplete="current-password"></div>
     <div class="bar">
       <button class="btn btn-primary" id="btnLogin">Entrar</button>
       <button class="btn" id="btnDemo">Entrar em modo demo</button>
+      <button class="btn hidden" id="btnSignup">Criar conta</button>
     </div>
     <div class="error" id="loginError"></div>
   </div>
@@ -150,7 +151,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
             <button class="btn btn-primary" id="btnAddUser">Cadastrar usuário</button>
           </div>
           <div class="error" id="userError"></div>
-          <div class="notice" style="margin-top:12px"><strong>Primeiro admin:</strong> cadastre-se (signUp), insira o próprio perfil e promova a <code>admin</code> via SQL Editor: <code>UPDATE blog.profiles SET papel='admin' WHERE email='voce@exemplo.com';</code></div>
+          <div class="notice" style="margin-top:12px"><strong>Primeiro admin:</strong> crie a conta pelo botão <em>Criar conta</em> (perfil <code>author</code>) e depois promova a <code>admin</code> no SQL Editor: <code>UPDATE blog.profiles SET papel='admin' WHERE email='voce@exemplo.com';</code></div>
         </div>
       </div>
     </section>
@@ -225,6 +226,34 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     $('sbUrl').value=cfg.url||''; $('sbKey').value=cfg.key||'';
     if(cfg.url && cfg.key && window.supabase){ sb = window.supabase.createClient(cfg.url, cfg.key); mode='supabase'; $('modeLabel').textContent='Modo Supabase (configurado)'; }
     else { sb=null; mode='demo'; $('modeLabel').textContent='Modo demonstração (local)'; }
+    updateAuthUI();
+  }
+
+  function updateAuthUI(){
+    if(mode==='supabase'){
+      $('btnDemo').classList.add('hidden');
+      $('btnSignup').classList.remove('hidden');
+      $('loginHint').textContent='Acesso real via Supabase. Use "Criar conta" apenas para o primeiro usuário (perfil author); a promoção a admin é feita no banco (SQL Editor).';
+    } else {
+      $('btnDemo').classList.remove('hidden');
+      $('btnSignup').classList.add('hidden');
+      $('loginHint').textContent='Use e-mail e senha. Em modo demonstração, o acesso local é liberado com qualquer usuário criado nesta tela (armazenado no navegador). Com Supabase configurado, usa autenticação real.';
+    }
+  }
+
+  async function doSignup(){
+    $('loginError').textContent='';
+    var email=$('loginEmail').value.trim(), pass=$('loginPass').value;
+    if(!email || pass.length<6){ $('loginError').textContent='Informe e-mail e senha (mín. 6 caracteres).'; return; }
+    if(!sb){ $('loginError').textContent='Configure o Supabase na aba Configurações.'; return; }
+    var su=await sb.auth.signUp({email:email, password:pass});
+    if(su.error){ $('loginError').textContent=su.error.message; return; }
+    var uidU=(su.data.user && su.data.user.id) || null;
+    if(uidU){
+      var pi=await sb.from('blog.profiles').insert({id:uidU, email:email, nome:email.split('@')[0], papel:'author'});
+      if(pi.error){ $('loginError').textContent='Conta criada, mas falhou ao gravar o perfil: '+pi.error.message; return; }
+    }
+    toast('Conta criada. Faça login.');
   }
 
   function showApp(){ $('loginView').classList.add('hidden'); $('appView').classList.remove('hidden'); $('btnLogout').classList.remove('hidden'); refreshPosts(); refreshUsers(); }
@@ -244,6 +273,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   }
 
   $('btnLogin').onclick=doLogin;
+  $('btnSignup').onclick=doSignup;
   $('btnDemo').onclick=function(){ session={email:'demo@local',nome:'Admin Demo',papel:'admin',demo:true}; localStorage.setItem(SESSION_KEY, JSON.stringify(session)); showApp(); toast('Modo demo ativo.'); };
   $('btnLogout').onclick=async function(){ if(sb) await sb.auth.signOut(); localStorage.removeItem(SESSION_KEY); session=null; showLogin(); };
 
