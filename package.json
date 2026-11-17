@@ -6,7 +6,8 @@
   "scripts": {
     "start": "eleventy --serve",
     "build": "eleventy && node scripts/pagefind.js",
-    "export:content": "node scripts/export-content.js"
+    "export:content": "node scripts/export-content.js",
+    "sync:posts": "node scripts/sync-posts.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "^2.0.0",
