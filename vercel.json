@@ -1,15 +1,10 @@
 {
-  "version": 2,
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm install",
   "buildCommand": "npm run build",
   "outputDirectory": "_site",
-  "framework": null,
-  "routes": [
-    { "src": "/feed.xml", "headers": { "content-type": "application/rss+xml" } },
-    { "src": "/sitemap.xml", "headers": { "content-type": "application/xml" } },
-    { "src": "/robots.txt", "headers": { "content-type": "text/plain" } },
-    { "src": "/(.*)", "dest": "/$1" }
-  ],
-  "env": {
-    "ELEVENTY_ENV": "production"
+  "git": {
+    "deploymentEnabled": true
   }
 }
