@@ -106,7 +106,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
             <div class="row">
               <div class="field"><label for="categoria">Categoria</label>
                 <select id="categoria"><option value="noticia">Notícia</option><option value="comunicado">Comunicado</option><option value="formacao">Formação</option><option value="material">Material</option><option value="projeto">Projeto</option><option value="evento">Evento</option></select>
-              </div>
+                </div>
               <div class="field"><label for="data">Data</label><input type="date" id="data"></div>
             </div>
             <div class="row">
@@ -132,7 +132,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
       <div class="grid-2">
         <div class="card">
           <h2>Usuários admin</h2>
-          <p class="muted">Em modo demo, usuários são locais. Com Supabase, esta lista reflete perfis/convites (cadastro via convite por e-mail).</p>
+          <p class="muted">Em modo demo, usuários são locais. Com Supabase, esta lista reflete <code>blog.profiles</code> (cadastro via convite por e-mail / signUp).</p>
           <table>
             <thead><tr><th>Nome</th><th>E-mail</th><th>Papel</th><th></th></tr></thead>
             <tbody id="usersBody"></tbody>
@@ -142,7 +142,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
           <h2>Cadastrar usuário admin</h2>
           <div class="field"><label for="uNome">Nome</label><input type="text" id="uNome"></div>
           <div class="field"><label for="uEmail">E-mail</label><input type="email" id="uEmail"></div>
-          <div class="field"><label for="uSenha">Senha</label><input type="password" id="uSenha" placeholder="Mín. 6 caracteres (demo)"></div>
+          <div class="field"><label for="uSenha">Senha</label><input type="password" id="uSenha" placeholder="Mín. 6 caracteres"></div>
           <div class="field"><label for="uPapel">Papel</label>
             <select id="uPapel"><option value="admin">admin</option><option value="editor">editor</option><option value="author">author</option></select>
           </div>
@@ -150,7 +150,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
             <button class="btn btn-primary" id="btnAddUser">Cadastrar usuário</button>
           </div>
           <div class="error" id="userError"></div>
-          <div class="notice" style="margin-top:12px"><strong>Supabase:</strong> para convites reais por e-mail, use <code>supabase.auth.admin.inviteUserByEmail</code> em uma Edge Function com service role (não no navegador) e crie o registro em <code>blog.profiles</code>.</div>
+          <div class="notice" style="margin-top:12px"><strong>Primeiro admin:</strong> cadastre-se (signUp), insira o próprio perfil e promova a <code>admin</code> via SQL Editor: <code>UPDATE blog.profiles SET papel='admin' WHERE email='voce@exemplo.com';</code></div>
         </div>
       </div>
     </section>
@@ -194,9 +194,10 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   var sb=null, session=null, mode='demo';
 
   function uid(){ return 'id_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36); }
+  function uidUUID(){ return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){ var r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8); return v.toString(16); }); }
   function slugify(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
-  function esc(s){ return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
-  function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2200); }
+  function esc(s){ return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); }, 2200); }
   function $(id){ return document.getElementById(id); }
 
   var seedPosts=[
@@ -222,11 +223,11 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   function initSupabase(){
     var cfg=loadCfg();
     $('sbUrl').value=cfg.url||''; $('sbKey').value=cfg.key||'';
-    if(cfg.url && cfg.key && window.supabase){ sb = window.supabase.createClient(cfg.url, cfg.key); mode='supabase'; $('modeLabel').textContent='Modo Supabase (configurado)'; $('appNotice').innerHTML='<strong>Supabase configurado.</strong> Login e dados usam o projeto informado. Aplique <code>supabase/migrations/001_initial.sql</code> e configure Auth/RLS.'; }
+    if(cfg.url && cfg.key && window.supabase){ sb = window.supabase.createClient(cfg.url, cfg.key); mode='supabase'; $('modeLabel').textContent='Modo Supabase (configurado)'; }
     else { sb=null; mode='demo'; $('modeLabel').textContent='Modo demonstração (local)'; }
   }
 
-  function showApp(){ $('loginView').classList.add('hidden'); $('appView').classList.remove('hidden'); $('btnLogout').classList.remove('hidden'); renderPosts(); renderUsers(); }
+  function showApp(){ $('loginView').classList.add('hidden'); $('appView').classList.remove('hidden'); $('btnLogout').classList.remove('hidden'); refreshPosts(); refreshUsers(); }
   function showLogin(){ $('loginView').classList.remove('hidden'); $('appView').classList.add('hidden'); $('btnLogout').classList.add('hidden'); }
 
   async function doLogin(){
@@ -256,7 +257,55 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     };
   });
 
-  // Posts
+  // ---- Mapeamento Postagem (admin <-> banco) ----
+  function postToPayload(p){
+    return {
+      id: p.id,
+      titulo: p.title||'',
+      resumo: p.resumo||'',
+      categoria: p.categoria||'noticia',
+      tipo: p.categoria||'noticia',
+      tags: p.tags||[],
+      destaque: !!p.destaque,
+      publicado_em: p.data ? p.data : null,
+      autor: p.autor||'',
+      status: p.status||'draft',
+      conteudo: p.conteudo||'',
+      slug: p.slug || slugify(p.title||'')
+    };
+  }
+  function payloadToPost(r){
+    return {
+      id: r.id,
+      title: r.titulo,
+      resumo: r.resumo,
+      categoria: r.categoria || r.tipo,
+      tags: r.tags || [],
+      destaque: !!r.destaque,
+      data: (r.publicado_em || '').slice(0,10),
+      autor: r.autor || '',
+      status: r.status || 'draft',
+      conteudo: r.conteudo || '',
+      slug: r.slug || ''
+    };
+  }
+
+  // ---- Posts ----
+  async function loadPostsFromDB(){
+    var r = await sb.from('blog.posts').select('*').order('publicado_em', {ascending:false});
+    if(r.error) throw r.error;
+    return (r.data||[]).map(payloadToPost);
+  }
+  async function ensurePosts(){
+    if(mode==='supabase' && sb){
+      try { posts = await loadPostsFromDB(); }
+      catch(e){ toast('Erro ao carregar posts: '+e.message); posts=[]; }
+    } else {
+      posts = loadPosts();
+    }
+  }
+  async function refreshPosts(){ await ensurePosts(); renderPosts(); }
+
   function renderPosts(){
     var q=($('postSearch').value||'').toLowerCase();
     var list=$('postList'); list.innerHTML='';
@@ -282,37 +331,88 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   }
   function clearPost(){ currentPostId=null; $('postForm').reset(); $('postId').value=''; $('data').value=new Date().toISOString().slice(0,10); $('postFormTitle').textContent='Nova postagem'; renderPosts(); }
   $('btnNewPost').onclick=clearPost; $('postSearch').oninput=renderPosts;
-  $('postForm').onsubmit=function(e){ e.preventDefault();
-    var data={id:$('postId').value||uid(), title:$('title').value.trim(), resumo:$('resumo').value.trim(), categoria:$('categoria').value, data:$('data').value, autor:$('autor').value.trim(), status:$('status').value, tags:$('tags').value.split(',').map(function(s){return slugify(s.trim())||s.trim();}).filter(Boolean), destaque:$('destaque').checked, conteudo:$('conteudo').value, slug:slugify($('title').value)};
+  $('postForm').onsubmit=async function(e){ e.preventDefault();
+    var data={id:$('postId').value||uidUUID(), title:$('title').value.trim(), resumo:$('resumo').value.trim(), categoria:$('categoria').value, data:$('data').value, autor:$('autor').value.trim(), status:$('status').value, tags:$('tags').value.split(',').map(function(s){return slugify(s.trim())||s.trim();}).filter(Boolean), destaque:$('destaque').checked, conteudo:$('conteudo').value, slug:slugify($('title').value)};
     if(!data.title){ toast('Informe um título.'); return; }
+    if(mode==='supabase' && sb){
+      try{
+        var r=await sb.from('blog.posts').upsert(postToPayload(data), {onConflict:'id'});
+        if(r.error){ toast('Erro ao salvar: '+r.error.message); return; }
+        currentPostId=data.id; await refreshPosts(); selectPost(data.id); toast('Postagem salva no Supabase.');
+      }catch(err){ toast('Erro: '+err.message); }
+      return;
+    }
     var idx=posts.findIndex(function(p){return p.id===data.id;}); if(idx>=0) posts[idx]=Object.assign({},posts[idx],data); else posts.unshift(data);
     savePosts(posts); currentPostId=data.id; renderPosts(); selectPost(data.id); toast('Postagem salva.');
   };
-  $('btnDeletePost').onclick=function(){ if(!currentPostId){toast('Selecione uma postagem.');return;} if(!confirm('Excluir esta postagem?')) return; posts=posts.filter(function(p){return p.id!==currentPostId;}); savePosts(posts); clearPost(); toast('Postagem excluída.'); };
-  $('btnDuplicatePost').onclick=function(){ if(!currentPostId){toast('Selecione uma postagem.');return;} var p=posts.find(function(x){return x.id===currentPostId;}); if(!p) return; var c=JSON.parse(JSON.stringify(p)); c.id=uid(); c.title=p.title+' (cópia)'; c.slug=slugify(c.title); c.status='draft'; posts.unshift(c); savePosts(posts); renderPosts(); selectPost(c.id); toast('Postagem duplicada.'); };
+  $('btnDeletePost').onclick=async function(){ if(!currentPostId){toast('Selecione uma postagem.');return;} if(!confirm('Excluir esta postagem?')) return;
+    if(mode==='supabase' && sb){
+      try{ var r=await sb.from('blog.posts').delete().eq('id',currentPostId); if(r.error){ toast('Erro: '+r.error.message); return; } await refreshPosts(); clearPost(); toast('Postagem excluída.'); }
+      catch(err){ toast('Erro: '+err.message); }
+      return;
+    }
+    posts=posts.filter(function(p){return p.id!==currentPostId;}); savePosts(posts); clearPost(); toast('Postagem excluída.');
+  };
+  $('btnDuplicatePost').onclick=async function(){ if(!currentPostId){toast('Selecione uma postagem.');return;} var p=posts.find(function(x){return x.id===currentPostId;}); if(!p) return;
+    var c=JSON.parse(JSON.stringify(p)); c.id=uidUUID(); c.title=p.title+' (cópia)'; c.slug=slugify(c.title); c.status='draft';
+    if(mode==='supabase' && sb){
+      try{ var r=await sb.from('blog.posts').upsert(postToPayload(c), {onConflict:'id'}); if(r.error){ toast('Erro: '+r.error.message); return; } await refreshPosts(); selectPost(c.id); toast('Postagem duplicada.'); }
+      catch(err){ toast('Erro: '+err.message); }
+      return;
+    }
+    posts.unshift(c); savePosts(posts); renderPosts(); selectPost(c.id); toast('Postagem duplicada.');
+  };
 
   $('btnExport').onclick=function(){ var blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),posts:posts},null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='blog-ure-posts.json'; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},1000); toast('JSON exportado.'); };
   $('btnImport').onclick=function(){ $('fileInput').click(); };
   $('fileInput').onchange=function(e){ var f=e.target.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(){ try{ var d=JSON.parse(r.result); var arr=Array.isArray(d)?d:(d.posts||[]); if(!arr.length){toast('Nenhuma publicação.');return;} posts=arr.map(function(p){p.id=p.id||uid(); p.tags=p.tags||[]; return p;}); savePosts(posts); clearPost(); toast('Importado.'); }catch(err){ toast('Arquivo inválido.'); } }; r.readAsText(f); e.target.value=''; };
   $('btnResetDemo').onclick=function(){ if(!confirm('Restaurar posts de demonstração?')) return; posts=JSON.parse(JSON.stringify(seedPosts)); posts.forEach(function(p){p.id=uid();}); savePosts(posts); clearPost(); toast('Demo restaurada.'); };
 
-  // Users
+  // ---- Usuários ----
+  async function loadUsersFromDB(){
+    var r=await sb.from('blog.profiles').select('*').order('criado_em', {ascending:false});
+    if(r.error) throw r.error;
+    return (r.data||[]).map(function(u){ return {id:u.id, nome:u.nome||'-', email:u.email, papel:u.papel}; });
+  }
+  async function refreshUsers(){
+    if(mode==='supabase' && sb){
+      try{ users=await loadUsersFromDB(); }catch(e){ toast('Erro ao carregar usuários: '+e.message); users=[]; }
+    } else { users=loadUsers(); }
+    renderUsers();
+  }
   function renderUsers(){
     var tbody=$('usersBody'); tbody.innerHTML='';
-    if(!users.length){ tbody.innerHTML='<tr><td colspan="4" class="muted">Nenhum usuário cadastrado (demo). Cadastre ao lado.</td></tr>'; return; }
+    if(!users.length){ tbody.innerHTML='<tr><td colspan="4" class="muted">Nenhum usuário cadastrado. Cadastre ao lado.</td></tr>'; return; }
     users.forEach(function(u,idx){
       var tr=document.createElement('tr');
       tr.innerHTML='<td>'+esc(u.nome||'-')+'</td><td>'+esc(u.email)+'</td><td><span class="pill '+(u.papel==='admin'?'admin':'')+'">'+esc(u.papel)+'</span></td><td><button class="btn btn-sm btn-danger" data-i="'+idx+'">Remover</button></td>';
       tbody.appendChild(tr);
     });
-    tbody.querySelectorAll('button[data-i]').forEach(function(b){ b.onclick=function(){ var i=parseInt(b.getAttribute('data-i'),10); users.splice(i,1); saveUsers(users); renderUsers(); toast('Usuário removido.'); }; });
+    tbody.querySelectorAll('button[data-i]').forEach(function(b){ b.onclick=async function(){ var i=parseInt(b.getAttribute('data-i'),10);
+      if(mode==='supabase' && sb){
+        try{ var r=await sb.from('blog.profiles').delete().eq('id',users[i].id); if(r.error){ toast('Erro: '+r.error.message); return; } await refreshUsers(); toast('Perfil removido.'); }
+        catch(err){ toast('Erro: '+err.message); }
+        return;
+      }
+      users.splice(i,1); saveUsers(users); renderUsers(); toast('Usuário removido.');
+    }; });
   }
-  $('btnAddUser').onclick=function(){
+  $('btnAddUser').onclick=async function(){
     $('userError').textContent='';
     var nome=$('uNome').value.trim(), email=$('uEmail').value.trim().toLowerCase(), senha=$('uSenha').value, papel=$('uPapel').value;
     if(!email || !senha){ $('userError').textContent='Informe e-mail e senha.'; return; }
     if(senha.length<6){ $('userError').textContent='Senha deve ter ao menos 6 caracteres.'; return; }
     if(users.some(function(u){return u.email===email;})){ $('userError').textContent='Já existe usuário com este e-mail.'; return; }
+    if(mode==='supabase' && sb){
+      try{
+        var su=await sb.auth.signUp({email:email, password:senha});
+        if(su.error){ $('userError').textContent=su.error.message; return; }
+        var uidU=(su.data.user && su.data.user.id) || null;
+        if(uidU){ var pi=await sb.from('blog.profiles').insert({id:uidU, email:email, nome:nome, papel:papel}); if(pi.error){ toast('Auth criado, mas falhou ao gravar perfil: '+pi.error.message); } }
+        await refreshUsers(); toast('Usuário cadastrado no Supabase.');
+      }catch(err){ $('userError').textContent=err.message; }
+      return;
+    }
     users.push({id:uid(), nome:nome, email:email, senha:senha, papel:papel, criadoEm:new Date().toISOString()});
     saveUsers(users); $('uNome').value=''; $('uEmail').value=''; $('uSenha').value=''; renderUsers(); toast('Usuário cadastrado.');
   };
@@ -325,7 +425,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   initSupabase();
   try{ session=JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch(e){ session=null; }
   if(session) showApp(); else showLogin();
-  clearPost(); renderPosts(); renderUsers();
+  renderPosts(); renderUsers();
 })();
 </script>
 </body>
