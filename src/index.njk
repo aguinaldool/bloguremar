@@ -6,139 +6,153 @@ bodyClass: "home"
 permalink: /
 ---
 
-{% set featured = collections.featured | first %}
-{% set recent = collections.posts %}
+{% set cloud = collections.posts | tagCloud %}
+{% set latest = collections.posts[0] %}
 
-<header class="hero">
-  <div class="hero-bg">
-    <svg class="network-svg" viewBox="0 0 1200 500" preserveAspectRatio="none" aria-hidden="true">
-      <line x1="100" y1="420" x2="350" y2="180" stroke="#2563EB" stroke-width="2" opacity="0.12"/>
-      <line x1="350" y1="180" x2="620" y2="340" stroke="#2563EB" stroke-width="2" opacity="0.12"/>
-      <line x1="620" y1="340" x2="900" y2="140" stroke="#0D9488" stroke-width="2" opacity="0.12"/>
-      <line x1="900" y1="140" x2="1150" y2="400" stroke="#0D9488" stroke-width="2" opacity="0.12"/>
-      <circle cx="350" cy="180" r="6" fill="#2563EB" opacity="0.2"/>
-      <circle cx="620" cy="340" r="6" fill="#2563EB" opacity="0.2"/>
-      <circle cx="900" cy="140" r="6" fill="#0D9488" opacity="0.2"/>
+<div class="bg" aria-hidden="true">
+  <div class="bg-glow"></div>
+  <div class="bg-contours" id="bgContours"></div>
+</div>
+<div class="frame" aria-hidden="true">
+  <span class="f-tl">22°12′S</span><span class="f-tr">49°56′W</span>
+  <span class="f-bl">ALT 600 M</span><span class="f-br">SIRGAS 2000 · UTM 23S</span>
+</div>
+
+<div class="page">
+  <section class="hero hero--home" id="topo">
+    <svg class="hero-route" viewBox="0 0 1200 300" preserveAspectRatio="none" aria-hidden="true">
+      <path class="route" d="M-20 220 C150 120 260 260 420 190 S700 60 860 140 S1100 240 1240 160"/>
+      <path class="waypoint" d="M414 184h12M420 178v12" fill="none"/>
+      <path class="waypoint" d="M854 134h12M860 128v12" fill="none"/>
+      <circle class="route-dot" r="4.5">
+        <animateMotion dur="16s" repeatCount="indefinite" path="M-20 220 C150 120 260 260 420 190 S700 60 860 140 S1100 240 1240 160"/>
+      </circle>
     </svg>
-  </div>
-  <div class="hero-content">
-    {% if featured %}
-    <div class="hero-kicker"><span>{{ featured.data.categoria | sectionLabel }}</span> · Destaque</div>
-    <h1><a href="{{ featured.url }}" style="color:inherit;text-decoration:none;">{{ featured.data.title }}</a></h1>
-    <p class="hero-lede">{{ featured.data.resumo }}</p>
-    <div class="hero-actions">
-      <a href="{{ featured.url }}" class="btn btn-primary">Ler notícia <svg class="ic ic-sm" aria-hidden="true"><use href="#i-arr-r"/></svg></a>
+    <svg class="hero-rose" viewBox="0 0 120 120" aria-hidden="true">
+      <g class="rose-ring" fill="none" stroke="currentColor">
+        <circle cx="60" cy="60" r="52" stroke-width="1"/>
+        <circle cx="60" cy="60" r="40" stroke-width=".7" stroke-dasharray="3 4"/>
+        <path d="M60 8v14M60 98v14M8 60h14M98 60h14M23 23l10 10M87 87l10 10M97 23 87 33M33 87l-10 10" stroke-width="1"/>
+      </g>
+      <path class="rose-n" d="M60 26 66 60 60 94 54 60Z"/>
+      <text x="60" y="20" text-anchor="middle">N</text>
+      <text x="60" y="108" text-anchor="middle">S</text>
+      <text x="14" y="63" text-anchor="middle">W</text>
+      <text x="106" y="63" text-anchor="middle">E</text>
+    </svg>
+    <p class="hero-kicker stage">CADERNO DA REDE · MARÍLIA</p>
+    <h1 class="stage">URE Marília<span class="dot">.</span></h1>
+    <p class="hero-lede stage">{{ site.tagline }} <em>{{ site.description }}</em></p>
+    <div class="hero-stats stage">
+      <div class="stat"><b>{{ collections.posts.length }}</b><span>publicações</span></div>
+      <div class="stat"><b>{{ cloud.length }}</b><span>tags ativas</span></div>
+      <div class="stat"><b>{{ latest.date | dateBR }}</b><span>última folha</span></div>
     </div>
-    {% else %}
-    <div class="hero-kicker"><span>{{ site.shortName }}</span></div>
-    <h1>{{ site.tagline }}</h1>
-    <p class="hero-lede">{{ site.description }}</p>
-    {% endif %}
-  </div>
-</header>
+  </section>
 
-{% set allTags = [] %}
-{% for p in collections.posts %}
-  {% for t in p.data.tags %}
-    {% set allTags = (allTags.push(t), allTags) %}
-  {% endfor %}
-{% endfor %}
-{% set tagCounts = {} %}
-{% for t in allTags %}
-  {% if tagCounts[t] %}{% set tagCounts = tagCounts %}{% endif %}
-{% endfor %}
-
-<section class="section-sm">
-  <div class="container">
-    <div class="layout-with-sidebar">
-      <aside class="tags-sidebar" aria-label="Filtrar por tags">
-        <h3>Tags</h3>
-        <div class="tags-grid" id="tagsGrid">
-          {% set seen = [] %}
-          {% for p in collections.posts %}
-            {% for t in p.data.tags %}
-              {% if t not in seen %}
-                {% set seen = (seen.push(t), seen) %}
-                {% set count = 0 %}
-                {% for p2 in collections.posts %}{% if t in p2.data.tags %}{% set count = count + 1 %}{% endif %}{% endfor %}
-                <button type="button" class="tag-btn" data-tag="{{ t }}">{{ t }} <span class="count">{{ count }}</span></button>
-              {% endif %}
-            {% endfor %}
-          {% endfor %}
+  <div class="content-grid">
+    <div class="main-col" id="publicacoes">
+      <div class="toolbar">
+        <div class="toolbar-info">
+          <span id="countInfo">{{ collections.posts.length }} publicações</span>
+          <span id="filterChips"></span>
         </div>
-        <button type="button" class="btn btn-outline btn-sm tags-clear-btn" id="tagsClear" hidden>Limpar filtro</button>
-      </aside>
-
-      <div>
-        <div class="list-header">
-          <h2 class="list-title">Publicações</h2>
+        <div class="search" id="searchWrap">
+          <svg class="ic ic-sm" aria-hidden="true"><use href="#i-search"/></svg>
+          <input type="text" id="searchInput" placeholder="Buscar publicações…" aria-label="Buscar publicações" autocomplete="off">
+          <button class="search-clear" id="searchClear" aria-label="Limpar busca">
+            <svg class="ic ic-sm" aria-hidden="true"><use href="#i-x"/></svg>
+          </button>
         </div>
-        <div class="grid grid-3" id="postsGrid">
-          {% for p in collections.posts %}
-          <article class="card post-card-item" data-tags="{{ p.data.tags | join(',') }}">
-            <div class="card-image">
-              <svg class="network-svg" viewBox="0 0 400 200" preserveAspectRatio="none" style="width:100%;height:100%;background:#F1F5FA;" aria-hidden="true">
-                <line x1="40" y1="160" x2="360" y2="60" stroke="{{ p.data.categoria | sectionColor }}" stroke-width="2" opacity="0.2"/>
-                <circle cx="360" cy="60" r="5" fill="{{ p.data.categoria | sectionColor }}" opacity="0.3"/>
-                <circle cx="200" cy="120" r="4" fill="{{ p.data.categoria | sectionColor }}" opacity="0.2"/>
-              </svg>
+        <label class="sr-only" for="sortSel">Ordenar publicações</label>
+        <select class="select" id="sortSel">
+          <option value="new">Mais recentes</option>
+          <option value="old">Mais antigas</option>
+          <option value="az">Título A–Z</option>
+        </select>
+      </div>
+
+      <div class="mobile-tags" id="mobileTags" aria-label="Filtrar por tag">
+        {% for t in cloud %}
+        <button class="chip hue-{{ t.name | tagHue }}" data-tag="{{ t.name }}"><span class="dot"></span>{{ t.name }}</button>
+        {% endfor %}
+      </div>
+
+      <div class="posts" id="postsList">
+        {% for p in collections.posts %}
+        <article class="post-card reveal" data-id="{{ p.fileSlug }}" data-tags="{{ p.data.tags | realTags | join(',') }}" data-categoria="{{ p.data.categoria }}" data-title="{{ p.data.title | lower }}" data-search="{{ (p.data.title ~ ' ' ~ (p.data.resumo or '') ~ ' ' ~ (p.data.tags | realTags | join(' '))) | lower }}" data-date="{{ p.date | dateISO }}" data-url="{{ p.url }}">
+          <div class="post-cover">{{ p.fileSlug | coverSVG(p.data.title, p.data.categoria) | safe }}</div>
+          <div class="post-body">
+            <h2 class="post-title"><a href="{{ p.url }}">{{ p.data.title }}</a></h2>
+            <div class="post-meta">
+              <svg class="ic ic-sm" aria-hidden="true"><use href="#i-calendar"/></svg>
+              <time datetime="{{ p.date | dateISO }}">{{ p.date | dateBR }}</time>
+              <span class="sep">·</span>
+              <svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>
+              <span>{{ p.templateContent | readingTime }} min</span>
+              <span class="sep">·</span>
+              <span class="post-cat" style="color:{{ p.data.categoria | sectionColor }}">{{ p.data.categoria | sectionLabel }}</span>
             </div>
-            <div class="card-body">
-              <div class="card-meta">
-                <span>{{ p.date | dateBR }}</span>
-                <span>·</span>
-                <span style="color:{{ p.data.categoria | sectionColor }}">{{ p.data.categoria | sectionLabel }}</span>
-              </div>
-              <h3 class="card-title"><a href="{{ p.url }}">{{ p.data.title }}</a></h3>
-              <p class="card-excerpt">{{ p.data.resumo }}</p>
-              {% if p.data.tags and p.data.tags.length %}
-              <div class="tags">
-                {% for tag in p.data.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
-              </div>
-              {% endif %}
+            {% set cardTags = p.data.tags | realTags %}
+            {% if cardTags and cardTags.length %}
+            <div class="post-tags">
+              {% for tag in cardTags %}<button class="chip hue-{{ tag | tagHue }}" data-tag="{{ tag }}"><span class="dot"></span>{{ tag }}</button>{% endfor %}
             </div>
-          </article>
-          {% endfor %}
-        </div>
-        <div id="postsEmptyFilter" class="posts-empty-filter" hidden>Nenhuma publicação encontrada para esta tag.</div>
+            {% endif %}
+            <p class="post-excerpt">{{ p.data.resumo }}</p>
+            <div class="post-foot">
+              <a class="read-link" href="{{ p.url }}">Ler publicação <svg class="ic ic-sm" aria-hidden="true"><use href="#i-arr-r"/></svg></a>
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+
+      <div class="empty" id="emptyState" hidden>
+        <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
+        <h3>Nenhuma publicação encontrada</h3>
+        <p>Ajuste a busca ou limpe os filtros de tag para voltar à rota.</p>
       </div>
     </div>
+
+    <aside class="sidebar" aria-label="Barra lateral">
+      <section class="side-card" id="tagsCard">
+        <div class="side-head">
+          <svg class="ic" aria-hidden="true"><use href="#i-tag"/></svg>
+          <h3>Tags</h3>
+          <span class="side-count" id="tagCount">{{ cloud.length }}</span>
+        </div>
+        <ul class="tag-list" id="tagList">
+          {% for t in cloud %}
+          <li class="tag-item hue-{{ t.name | tagHue }}">
+            <button class="tag-row" data-tag="{{ t.name }}">
+              <span class="tag-dot"></span>
+              <span class="t-name">{{ t.name }}</span>
+              <span class="t-count">{{ t.count }}</span>
+            </button>
+          </li>
+          {% endfor %}
+        </ul>
+        <button class="btn btn-outline btn-sm side-clear" id="clearTagBtn" data-action="clear-tag" hidden>Limpar filtro</button>
+      </section>
+
+      <section class="side-card" id="sobre">
+        <div class="side-head">
+          <svg class="ic" aria-hidden="true"><use href="#i-layers"/></svg>
+          <h3>Sobre a URE</h3>
+        </div>
+        <div class="about-map" aria-hidden="true">{{ "sobre-ure-marilia" | coverSVG("URE Marília", "projeto") | safe }}</div>
+        <p class="about-txt">{{ site.description }}</p>
+        <dl class="about-stats">
+          <div><dt>Publicações</dt><dd>{{ collections.posts.length }}</dd></div>
+          <div><dt>Tags ativas</dt><dd>{{ cloud.length }}</dd></div>
+          <div><dt>Última</dt><dd>{{ latest.date | dateBR }}</dd></div>
+          <div><dt>Ano</dt><dd>{{ now | dateBR("yyyy") }}</dd></div>
+        </dl>
+        <p class="about-coords"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-pin"/></svg>{{ site.coords }}</p>
+      </section>
+    </aside>
   </div>
-</section>
+</div>
 
-<script>
-(function(){
-  var grid = document.getElementById('tagsGrid');
-  var cards = document.querySelectorAll('.post-card-item');
-  var clearBtn = document.getElementById('tagsClear');
-  var empty = document.getElementById('postsEmptyFilter');
-  if(!grid) return;
-  var active = null;
-  function apply(){
-    var visible = 0;
-    cards.forEach(function(card){
-      var tags = (card.getAttribute('data-tags')||'').split(',');
-      var show = !active || tags.indexOf(active) !== -1;
-      card.classList.toggle('is-hidden', !show);
-      if(show) visible++;
-    });
-    clearBtn.hidden = !active;
-    if(empty) empty.hidden = visible > 0;
-  }
-  grid.addEventListener('click', function(e){
-    var btn = e.target.closest('.tag-btn');
-    if(!btn) return;
-    var tag = btn.getAttribute('data-tag');
-    active = (active === tag) ? null : tag;
-    grid.querySelectorAll('.tag-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-tag')===active); });
-    apply();
-  });
-  clearBtn.addEventListener('click', function(){
-    active = null;
-    grid.querySelectorAll('.tag-btn').forEach(function(b){ b.classList.remove('active'); });
-    apply();
-  });
-})();
-</script>
-
-
+<script src="/assets/js/home.js" defer></script>
