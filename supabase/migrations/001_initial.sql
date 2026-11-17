@@ -1,7 +1,6 @@
 -- ========================================
 -- Schema do blog URE Marília (Fase 2)
--- ARQUIVO APENAS — não aplicado automaticamente.
--- Aplique no projeto Supabase dedicado quando disponível.
+-- Idempotente: pode ser executado múltiplas vezes.
 -- ========================================
 
 -- Schema
@@ -89,6 +88,17 @@ ALTER TABLE blog.pages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blog.settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blog.post_revisions ENABLE ROW LEVEL SECURITY;
 
+-- Remove policies existentes (idempotente) antes de recriar
+DROP POLICY IF EXISTS "posts_public_leitura" ON blog.posts;
+DROP POLICY IF EXISTS "categories_public_leitura" ON blog.categories;
+DROP POLICY IF EXISTS "pages_public_leitura" ON blog.pages;
+DROP POLICY IF EXISTS "profiles_public_leitura" ON blog.profiles;
+DROP POLICY IF EXISTS "posts_autor_edicao" ON blog.posts;
+DROP POLICY IF EXISTS "posts_editor_publica" ON blog.posts;
+DROP POLICY IF EXISTS "admin_gerencia_tudo" ON blog.posts;
+DROP POLICY IF EXISTS "media_leitura_publica" ON storage.objects;
+DROP POLICY IF EXISTS "media_escrita_autenticada" ON storage.objects;
+
 -- Políticas públicas de leitura (apenas publicados)
 CREATE POLICY "posts_public_leitura" ON blog.posts
   FOR SELECT TO anon
@@ -160,6 +170,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP TRIGGER IF EXISTS trigger_post_revisao ON blog.posts;
 CREATE TRIGGER trigger_post_revisao
   AFTER UPDATE ON blog.posts
   FOR EACH ROW
