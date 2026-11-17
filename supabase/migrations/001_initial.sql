@@ -4,8 +4,11 @@
 -- Aplique no projeto Supabase dedicado quando disponível.
 -- ========================================
 
+-- Schema
+CREATE SCHEMA IF NOT EXISTS blog;
+
 -- Enable extensions
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ========================================
 -- Tabelas
