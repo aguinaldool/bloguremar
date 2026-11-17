@@ -250,7 +250,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     if(su.error){ $('loginError').textContent=su.error.message; return; }
     var uidU=(su.data.user && su.data.user.id) || null;
     if(uidU){
-      var pi=await sb.from('blog.profiles').insert({id:uidU, email:email, nome:email.split('@')[0], papel:'author'});
+      var pi=await sb.schema('blog').from('profiles').insert({id:uidU, email:email, nome:email.split('@')[0], papel:'author'});
       if(pi.error){ $('loginError').textContent='Conta criada, mas falhou ao gravar o perfil: '+pi.error.message; return; }
     }
     toast('Conta criada. Faça login.');
@@ -322,7 +322,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
 
   // ---- Posts ----
   async function loadPostsFromDB(){
-    var r = await sb.from('blog.posts').select('*').order('publicado_em', {ascending:false});
+    var r = await sb.schema('blog').from('posts').select('*').order('publicado_em', {ascending:false});
     if(r.error) throw r.error;
     return (r.data||[]).map(payloadToPost);
   }
@@ -366,7 +366,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     if(!data.title){ toast('Informe um título.'); return; }
     if(mode==='supabase' && sb){
       try{
-        var r=await sb.from('blog.posts').upsert(postToPayload(data), {onConflict:'id'});
+        var r=await sb.schema('blog').from('posts').upsert(postToPayload(data), {onConflict:'id'});
         if(r.error){ toast('Erro ao salvar: '+r.error.message); return; }
         currentPostId=data.id; await refreshPosts(); selectPost(data.id); toast('Postagem salva no Supabase.');
       }catch(err){ toast('Erro: '+err.message); }
@@ -377,7 +377,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   };
   $('btnDeletePost').onclick=async function(){ if(!currentPostId){toast('Selecione uma postagem.');return;} if(!confirm('Excluir esta postagem?')) return;
     if(mode==='supabase' && sb){
-      try{ var r=await sb.from('blog.posts').delete().eq('id',currentPostId); if(r.error){ toast('Erro: '+r.error.message); return; } await refreshPosts(); clearPost(); toast('Postagem excluída.'); }
+      try{ var r=await sb.schema('blog').from('posts').delete().eq('id',currentPostId); if(r.error){ toast('Erro: '+r.error.message); return; } await refreshPosts(); clearPost(); toast('Postagem excluída.'); }
       catch(err){ toast('Erro: '+err.message); }
       return;
     }
@@ -386,7 +386,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   $('btnDuplicatePost').onclick=async function(){ if(!currentPostId){toast('Selecione uma postagem.');return;} var p=posts.find(function(x){return x.id===currentPostId;}); if(!p) return;
     var c=JSON.parse(JSON.stringify(p)); c.id=uidUUID(); c.title=p.title+' (cópia)'; c.slug=slugify(c.title); c.status='draft';
     if(mode==='supabase' && sb){
-      try{ var r=await sb.from('blog.posts').upsert(postToPayload(c), {onConflict:'id'}); if(r.error){ toast('Erro: '+r.error.message); return; } await refreshPosts(); selectPost(c.id); toast('Postagem duplicada.'); }
+      try{ var r=await sb.schema('blog').from('posts').upsert(postToPayload(c), {onConflict:'id'}); if(r.error){ toast('Erro: '+r.error.message); return; } await refreshPosts(); selectPost(c.id); toast('Postagem duplicada.'); }
       catch(err){ toast('Erro: '+err.message); }
       return;
     }
@@ -400,7 +400,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
 
   // ---- Usuários ----
   async function loadUsersFromDB(){
-    var r=await sb.from('blog.profiles').select('*').order('criado_em', {ascending:false});
+    var r=await sb.schema('blog').from('profiles').select('*').order('criado_em', {ascending:false});
     if(r.error) throw r.error;
     return (r.data||[]).map(function(u){ return {id:u.id, nome:u.nome||'-', email:u.email, papel:u.papel}; });
   }
@@ -420,7 +420,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     });
     tbody.querySelectorAll('button[data-i]').forEach(function(b){ b.onclick=async function(){ var i=parseInt(b.getAttribute('data-i'),10);
       if(mode==='supabase' && sb){
-        try{ var r=await sb.from('blog.profiles').delete().eq('id',users[i].id); if(r.error){ toast('Erro: '+r.error.message); return; } await refreshUsers(); toast('Perfil removido.'); }
+        try{ var r=await sb.schema('blog').from('profiles').delete().eq('id',users[i].id); if(r.error){ toast('Erro: '+r.error.message); return; } await refreshUsers(); toast('Perfil removido.'); }
         catch(err){ toast('Erro: '+err.message); }
         return;
       }
@@ -438,7 +438,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
         var su=await sb.auth.signUp({email:email, password:senha});
         if(su.error){ $('userError').textContent=su.error.message; return; }
         var uidU=(su.data.user && su.data.user.id) || null;
-        if(uidU){ var pi=await sb.from('blog.profiles').insert({id:uidU, email:email, nome:nome, papel:papel}); if(pi.error){ toast('Auth criado, mas falhou ao gravar perfil: '+pi.error.message); } }
+        if(uidU){ var pi=await sb.schema('blog').from('profiles').insert({id:uidU, email:email, nome:nome, papel:papel}); if(pi.error){ toast('Auth criado, mas falhou ao gravar perfil: '+pi.error.message); } }
         await refreshUsers(); toast('Usuário cadastrado no Supabase.');
       }catch(err){ $('userError').textContent=err.message; }
       return;
