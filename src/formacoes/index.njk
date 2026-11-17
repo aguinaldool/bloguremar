@@ -19,9 +19,6 @@ permalink: /formacoes/
     <div class="grid grid-3">
       {% for post in collections.formacoes %}
       <article class="card">
-        <div class="card-image">
-          {{ post.fileSlug | coverSVG(post.data.title, post.data.categoria) | safe }}
-        </div>
         <div class="card-body">
           <div class="card-meta"><span>{{ post.date | dateBR }}</span><span>·</span><span style="color:var(--color-teal)">Formação</span></div>
           <h3 class="card-title"><a href="{{ post.url }}">{{ post.data.title }}</a></h3>

@@ -81,7 +81,6 @@ permalink: /
       <div class="posts" id="postsList">
         {% for p in collections.posts %}
         <article class="post-card reveal" data-id="{{ p.fileSlug }}" data-tags="{{ p.data.tags | realTags | join(',') }}" data-categoria="{{ p.data.categoria }}" data-title="{{ p.data.title | lower }}" data-search="{{ (p.data.title ~ ' ' ~ (p.data.resumo or '') ~ ' ' ~ (p.data.tags | realTags | join(' '))) | lower }}" data-date="{{ p.date | dateISO }}" data-url="{{ p.url }}">
-          <div class="post-cover">{{ p.fileSlug | coverSVG(p.data.title, p.data.categoria) | safe }}</div>
           <div class="post-body">
             <h2 class="post-title"><a href="{{ p.url }}">{{ p.data.title }}</a></h2>
             <div class="post-meta">

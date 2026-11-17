@@ -18,9 +18,6 @@ permalink: /noticias/
     <div class="grid grid-3">
       {% for post in collections.posts %}
       <article class="card">
-        <div class="card-image">
-          {{ post.fileSlug | coverSVG(post.data.title, post.data.categoria) | safe }}
-        </div>
         <div class="card-body">
           <div class="card-meta">
             <span>{{ post.date | dateBR }}</span>

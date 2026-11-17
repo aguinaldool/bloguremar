@@ -3,36 +3,37 @@
    ======================================== */
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* Fundo e superfície — tema cartográfico escuro */
-  --color-bg: #0A1512;
-  --color-surface: #122620;
-  --color-surface-alt: #0E1E19;
+  /* Fundo e superfície — tema cartográfico claro (pergaminho) */
+  --color-bg: #F4EFE3;
+  --color-surface: #FCF8EF;
+  --color-surface-alt: #EDE3CF;
 
   /* Tinta e texto */
-  --color-ink: #EFE9DB;
-  --color-ink-soft: #A6B4A4;
-  --color-muted: #6F7F70;
-  --color-line: #25453A;
+  --color-ink: #1E2B23;
+  --color-ink-soft: #51604F;
+  --color-muted: #8A9385;
+  --color-line: #D8C9AC;
 
-  /* Cores por seção (cartográficas) */
-  --color-blue: #54B8FF;    /* Notícias */
-  --color-teal: #3BD6B4;    /* Formações */
-  --color-amber: #FFB454;   /* Materiais */
-  --color-violet: #B79CFF;  /* Escolas / Projetos */
-  --color-coral: #FF7A48;   /* Comunicados */
+  /* Cores por seção — UI em fundo claro (tons "tinta") */
+  --color-blue: #1C74B8;    /* Notícias */
+  --color-teal: #0C9483;    /* Formações */
+  --color-amber: #B9771B;   /* Materiais */
+  --color-violet: #6F4FC0;  /* Escolas / Projetos */
+  --color-coral: #D2512A;   /* Comunicados */
+  --color-green: #2E8F44;   /* Eventos */
 
-  /* Matizes das capas geradas */
-  --amber: #FFB454;
-  --blue: #54B8FF;
-  --green: #84DD84;
-  --magenta: #FF6FA8;
-  --orange: #FF7A48;
-  --teal: #3BD6B4;
+  /* Matizes das capas geradas (sobre tiles escuros) — mantidas vivas */
+  --amber: #F2A93C;
+  --blue: #5FB6F2;
+  --green: #76D07A;
+  --magenta: #F26FA8;
+  --orange: #F2814E;
+  --teal: #34D2B0;
   --violet: #B79CFF;
-  --lime: #C8E96E;
-  --cover-bg: #0D1F1A;
+  --lime: #C2E45F;
+  --cover-bg: #10241E;
 
   /* Estados */
   --color-success: #4ADE80;
@@ -93,10 +94,6 @@
 
   /* Cabeçalho fixo */
   --header-h: 68px;
-
-  /* Modo demonstração */
-  --color-demo-border: #FF7A48;
-  --color-demo-bg: rgba(255, 122, 72, 0.08);
 }
 
 /* ========================================
@@ -360,23 +357,6 @@ li {
 }
 
 /* ========================================
-   Demo banner
-   ======================================== */
-
-.demo-banner {
-  background: var(--color-demo-bg);
-  border: 1px dashed var(--color-demo-border);
-  color: var(--color-coral);
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--text-sm);
-  text-align: center;
-}
-
-.demo-banner strong {
-  color: var(--color-coral);
-}
-
-/* ========================================
    Botões
    ======================================== */
 
@@ -454,25 +434,6 @@ li {
 .card-featured {
   border-color: var(--color-blue);
   box-shadow: var(--shadow-lg);
-}
-
-.card-image {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
-  background: var(--color-surface-alt);
-}
-
-.card-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--duration-normal) var(--ease);
-}
-
-.card:hover .card-image img {
-  transform: scale(1.03);
 }
 
 .card-badge {
@@ -724,15 +685,6 @@ li {
   color: var(--color-ink-soft);
   line-height: 1.6;
   margin: 0 0 var(--space-6) 0;
-}
-
-.article-cover {
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  border: 1px solid var(--color-line);
-  margin-bottom: var(--space-6);
-  height: 260px;
-  background: var(--cover-bg);
 }
 
 .article-body {

@@ -28,10 +28,6 @@ layout: layouts/base.njk
     {% endif %}
   </header>
 
-  <div class="article-cover">
-    {{ page.fileSlug | coverSVG(title, categoria) | safe }}
-  </div>
-
   <div class="article-body">
     {{ content | safe }}
   </div>
