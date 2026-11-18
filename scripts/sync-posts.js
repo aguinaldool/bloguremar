@@ -18,9 +18,8 @@ const all = process.argv.includes("--all");
 const clean = process.argv.includes("--clean");
 
 if (!url || !key) {
-  console.error("❌ Defina SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY (ou SUPABASE_KEY).");
-  console.error("   Ex.: SUPABASE_URL=https://xxxx.supabase.co SUPABASE_SERVICE_ROLE_KEY=eyJ... npm run sync:posts");
-  process.exit(1);
+  console.warn("⚠️  SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY não definidas — pulando sync (usando posts locais).");
+  process.exit(0);
 }
 
 function slugify(s) {
@@ -79,8 +78,8 @@ async function main() {
     },
   });
   if (!res.ok) {
-    console.error("❌ Erro ao buscar posts:", res.status, await res.text());
-    process.exit(1);
+    console.warn("⚠️  Erro ao buscar posts (" + res.status + ") — pulando sync para não quebrar o build.");
+    process.exit(0);
   }
 
   const posts = await res.json();
@@ -109,6 +108,6 @@ async function main() {
 }
 
 main().catch((e) => {
-  console.error("❌", e.message);
-  process.exit(1);
+  console.warn("⚠️  Sync pulado por erro:", e.message);
+  process.exit(0);
 });
