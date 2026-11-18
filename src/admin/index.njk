@@ -41,7 +41,7 @@ h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 10px}h3{font-size:14px;m
 table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);font-size:13px}th{font-size:12px;color:var(--muted);text-transform:uppercase}
 .toast{position:fixed;right:16px;bottom:16px;background:#0E1F35;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:50}
 .toast.show{opacity:1;transform:none}
-.login,.setup{max-width:460px;margin:50px auto}
+.login{max-width:420px;margin:50px auto}
 .error{color:var(--red);font-size:13px;margin-top:6px}
 .search input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px}
 </style>
@@ -51,21 +51,12 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   <div class="top">
     <div>
       <h1>Admin — Caderno da Rede</h1>
-      <div class="muted" id="modeLabel">Conectando…</div>
+      <div class="muted" id="userLabel">URE Marília</div>
     </div>
     <div class="bar">
       <a class="btn btn-sm" href="/" target="_blank">Ver site</a>
       <button class="btn btn-sm hidden" id="btnLogout">Sair</button>
     </div>
-  </div>
-
-  <div id="setupView" class="setup card hidden">
-    <h2>Configuração inicial</h2>
-    <p class="muted">Informe os dados do projeto Supabase para conectar o painel. Eles ficam salvos neste navegador.</p>
-    <div class="field"><label for="setupUrl">Project URL</label><input type="text" id="setupUrl" placeholder="https://xxxx.supabase.co"></div>
-    <div class="field"><label for="setupKey">Publishable/Anon key</label><input type="text" id="setupKey" placeholder="sb_publishable_..."></div>
-    <div class="bar"><button class="btn btn-primary" id="btnSetupSave">Salvar e continuar</button></div>
-    <div class="error" id="setupError"></div>
   </div>
 
   <div id="loginView" class="login card hidden">
@@ -83,7 +74,6 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     <div class="tabs">
       <button class="tab active" data-tab="posts">Postagens</button>
       <button class="tab" data-tab="users">Usuários</button>
-      <button class="tab" data-tab="settings">Configurações</button>
     </div>
 
     <section id="tab-posts">
@@ -106,9 +96,10 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
           <ul class="list" id="postList"></ul>
         </aside>
         <main class="card">
-          <h2 id="postFormTitle">Editor de postagem</h2>
+          <h2 id="postFormTitle">Nova postagem</h2>
           <form id="postForm">
             <input type="hidden" id="postId">
+            <input type="hidden" id="postSlug">
             <div class="field"><label for="title">Título</label><input type="text" id="title" required></div>
             <div class="field"><label for="resumo">Resumo</label><input type="text" id="resumo"></div>
             <div class="row">
@@ -127,10 +118,11 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
             <div class="field"><label><input type="checkbox" id="destaque"> Destaque na página inicial</label></div>
             <div class="field"><label for="conteudo">Conteúdo (Markdown)</label><textarea id="conteudo"></textarea></div>
             <div class="bar">
-              <button type="submit" class="btn btn-primary">Salvar postagem</button>
+              <button type="submit" class="btn btn-primary" id="btnSavePost">Salvar postagem</button>
               <button type="button" class="btn btn-danger" id="btnDeletePost">Excluir</button>
               <button type="button" class="btn" id="btnDuplicatePost">Duplicar</button>
             </div>
+            <div class="error" id="postError"></div>
           </form>
         </main>
       </div>
@@ -139,8 +131,8 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     <section id="tab-users" class="hidden">
       <div class="grid-2">
         <div class="card">
-          <h2>Usuários admin</h2>
-          <p class="muted">Usuários e papéis vindos de <code>blog.profiles</code>.</p>
+          <h2>Usuários cadastrados</h2>
+          <p class="muted">Gerencie os usuários com acesso ao painel administrativo.</p>
           <table>
             <thead><tr><th>Nome</th><th>E-mail</th><th>Papel</th><th></th></tr></thead>
             <tbody id="usersBody"></tbody>
@@ -156,31 +148,6 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
           </div>
           <div class="bar"><button class="btn btn-primary" id="btnAddUser">Cadastrar usuário</button></div>
           <div class="error" id="userError"></div>
-          <div class="notice" style="margin-top:12px">O cadastro cria o usuário no Supabase Auth e o perfil em <code>blog.profiles</code> com o papel escolhido.</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-settings" class="hidden">
-      <div class="grid-2">
-        <div class="card">
-          <h2>Conexão Supabase</h2>
-          <p class="muted">URL e chave pública do projeto. Salvo neste navegador.</p>
-          <div class="field"><label for="sbUrl">Project URL</label><input type="text" id="sbUrl" placeholder="https://xxxx.supabase.co"></div>
-          <div class="field"><label for="sbKey">Publishable/Anon key</label><input type="text" id="sbKey" placeholder="sb_publishable_..."></div>
-          <div class="bar">
-            <button class="btn btn-primary" id="btnSaveSettings">Salvar configuração</button>
-            <button class="btn" id="btnClearSettings">Desconectar</button>
-          </div>
-          <div class="muted" style="margin-top:8px">Nunca use a service role aqui — apenas a chave pública.</div>
-        </div>
-        <div class="card">
-          <h2>Publicação / Deploy</h2>
-          <p class="muted">Este site é estático (11ty). Posts salvos no Supabase aparecem no site após sincronizar e rebuildar:</p>
-          <ul class="muted">
-            <li><code>npm run sync:posts</code> (com <code>SUPABASE_URL</code> e <code>SUPABASE_SERVICE_ROLE_KEY</code>).</li>
-            <li><code>npm run build</code> e push — a Vercel reconstrói automaticamente.</li>
-          </ul>
         </div>
       </div>
     </section>
@@ -192,52 +159,58 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
 <script>
 (function(){
   "use strict";
-  var CFG_KEY = "ure_blog_cfg_v1";
-  var DEFAULT_URL = "https://lymrixekprobknxvoomk.supabase.co";
-  var DEFAULT_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5bXJpeGVrcHJvYmtueHZvb21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ4NDM1MjcsImV4cCI6MjExMDQxOTUyN30.ZK0wp4o2XZwJ98a6EdPzKe85fTA1S3G9ex2SmsgBcbw";
-  var sb = null, session = null, posts = [], users = [], currentPostId = null;
+  var SUPABASE_URL = "https://lymrixekprobknxvoomk.supabase.co";
+  var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5bXJpeGVrcHJvYmtueHZvb21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ4NDM1MjcsImV4cCI6MjExMDQxOTUyN30.ZK0wp4o2XZwJ98a6EdPzKe85fTA1S3G9ex2SmsgBcbw";
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  var session = null, posts = [], users = [], currentPostId = null;
 
   function $(id){ return document.getElementById(id); }
-  function toast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){ t.classList.remove("show"); },2400); }
+  function toast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){ t.classList.remove("show"); },2600); }
   function esc(s){ return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
   function slugify(s){ return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""); }
   function uidUUID(){ return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c==="x"?r:(r&0x3|0x8);return v.toString(16);}); }
-  function loadCfg(){
-    try{
-      var saved = JSON.parse(localStorage.getItem(CFG_KEY)||"{}");
-      return { url: saved.url || DEFAULT_URL, key: saved.key || DEFAULT_KEY };
-    }catch(e){
-      return { url: DEFAULT_URL, key: DEFAULT_KEY };
-    }
-  }
-  function saveCfg(c){ localStorage.setItem(CFG_KEY,JSON.stringify(c||{})); }
   function userId(){ return (session && session.user && session.user.id) || null; }
+  function userEmail(){ return (session && session.user && session.user.email) || ""; }
 
-  function initClient(){
-    var cfg = loadCfg();
-    $("sbUrl").value = cfg.url||""; $("sbKey").value = cfg.key||"";
-    $("setupUrl").value = cfg.url||""; $("setupKey").value = cfg.key||"";
-    if(cfg.url && cfg.key && window.supabase){
-      sb = window.supabase.createClient(cfg.url, cfg.key);
-      $("modeLabel").textContent = "Supabase (" + new URL(cfg.url).hostname + ")";
-      return true;
-    }
-    sb = null; $("modeLabel").textContent = "Não conectado"; return false;
+  function showLogin(){
+    $("loginView").classList.remove("hidden");
+    $("appView").classList.add("hidden");
+    $("btnLogout").classList.add("hidden");
+    $("userLabel").textContent = "URE Marília";
+  }
+  function showApp(){
+    $("appView").classList.remove("hidden");
+    $("loginView").classList.add("hidden");
+    $("btnLogout").classList.remove("hidden");
+    $("userLabel").textContent = userEmail() || "URE Marília";
+    clearPost();
+    refreshPosts();
+    refreshUsers();
   }
 
-  function showSetup(){ $("setupView").classList.remove("hidden"); $("loginView").classList.add("hidden"); $("appView").classList.add("hidden"); $("btnLogout").classList.add("hidden"); }
-  function showLogin(){ $("loginView").classList.remove("hidden"); $("setupView").classList.add("hidden"); $("appView").classList.add("hidden"); $("btnLogout").classList.add("hidden"); }
-  function showApp(){ $("appView").classList.remove("hidden"); $("setupView").classList.add("hidden"); $("loginView").classList.add("hidden"); $("btnLogout").classList.remove("hidden"); refreshPosts(); refreshUsers(); }
+  function uniqueSlug(baseSlug, postId){
+    var s = baseSlug || ("post-" + Date.now().toString(36));
+    var clash = posts.some(function(p){ return p.slug === s && p.id !== postId; });
+    if(clash) s = s + "-" + Math.random().toString(36).slice(2,6);
+    return s;
+  }
 
   function postToPayload(p){
+    var dateStr = p.data || new Date().toISOString().slice(0,10);
     return {
-      id: p.id, titulo: p.title||"", resumo: p.resumo||"",
-      categoria: p.categoria||"noticia", tipo: p.categoria||"noticia",
-      tags: p.tags||[], destaque: !!p.destaque,
-      publicado_em: p.data ? p.data : null,
-      autor: p.autor||"", autor_id: userId(),
-      status: p.status||"draft", conteudo: p.conteudo||"",
-      slug: p.slug || slugify(p.title||"")
+      id: p.id,
+      titulo: p.title||"",
+      resumo: p.resumo||"",
+      categoria: p.categoria||"noticia",
+      tipo: p.categoria||"noticia",
+      tags: p.tags||[],
+      destaque: !!p.destaque,
+      publicado_em: dateStr + "T12:00:00Z",
+      autor: p.autor||"Equipe URE Marília",
+      autor_id: userId(),
+      status: p.status||"published",
+      conteudo: p.conteudo||"",
+      slug: uniqueSlug(p.slug || slugify(p.title||""), p.id)
     };
   }
   function payloadToPost(r){
@@ -253,7 +226,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
       var r = await sb.schema("blog").from("posts").select("*").order("publicado_em",{ascending:false});
       if(r.error) throw r.error;
       posts = (r.data||[]).map(payloadToPost);
-    }catch(e){ toast("Erro ao carregar posts: "+e.message); posts=[]; }
+    }catch(e){ toast("Erro ao carregar postagens: "+e.message); posts=[]; }
     renderPosts();
   }
   function renderPosts(){
@@ -277,23 +250,61 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   }
   function selectPost(id){
     var p=posts.find(function(x){return x.id===id;}); if(!p) return; currentPostId=id;
-    $("postId").value=p.id; $("title").value=p.title||""; $("resumo").value=p.resumo||""; $("categoria").value=p.categoria||"noticia";
-    $("data").value=p.data||""; $("autor").value=p.autor||""; $("status").value=p.status||"published";
+    $("postError").textContent="";
+    $("postId").value=p.id; $("postSlug").value=p.slug||""; $("title").value=p.title||""; $("resumo").value=p.resumo||""; $("categoria").value=p.categoria||"noticia";
+    $("data").value=p.data||""; $("autor").value=p.autor||"Equipe URE Marília"; $("status").value=p.status||"published";
     $("tags").value=(p.tags||[]).join(", "); $("destaque").checked=!!p.destaque; $("conteudo").value=p.conteudo||"";
     $("postFormTitle").textContent="Editar postagem"; renderPosts();
   }
-  function clearPost(){ currentPostId=null; $("postForm").reset(); $("postId").value=""; $("data").value=new Date().toISOString().slice(0,10); $("postFormTitle").textContent="Nova postagem"; renderPosts(); }
-  $("btnNewPost").onclick=clearPost; $("postSearch").oninput=renderPosts;
+  function clearPost(){
+    currentPostId=null;
+    $("postError").textContent="";
+    $("postForm").reset();
+    $("postId").value="";
+    $("postSlug").value="";
+    $("autor").value="Equipe URE Marília";
+    $("status").value="published";
+    $("data").value=new Date().toISOString().slice(0,10);
+    $("postFormTitle").textContent="Nova postagem";
+    renderPosts();
+  }
+  $("btnNewPost").onclick=clearPost;
+  $("postSearch").oninput=renderPosts;
 
   $("postForm").onsubmit=async function(e){
     e.preventDefault();
-    var d={ id:$("postId").value||uidUUID(), title:$("title").value.trim(), resumo:$("resumo").value.trim(), categoria:$("categoria").value, data:$("data").value, autor:$("autor").value.trim(), status:$("status").value, tags:$("tags").value.split(",").map(function(s){return slugify(s.trim())||s.trim();}).filter(Boolean), destaque:$("destaque").checked, conteudo:$("conteudo").value, slug:slugify($("title").value) };
-    if(!d.title){ toast("Informe um título."); return; }
+    $("postError").textContent="";
+    var isNew = !$("postId").value;
+    var id = $("postId").value || uidUUID();
+    var title = $("title").value.trim();
+    if(!title){ $("postError").textContent="Informe um título."; return; }
+    var d={
+      id: id,
+      title: title,
+      resumo: $("resumo").value.trim(),
+      categoria: $("categoria").value,
+      data: $("data").value,
+      autor: $("autor").value.trim() || "Equipe URE Marília",
+      status: $("status").value,
+      tags: $("tags").value.split(",").map(function(s){return slugify(s.trim())||s.trim();}).filter(Boolean),
+      destaque: $("destaque").checked,
+      conteudo: $("conteudo").value,
+      slug: (!isNew && $("postSlug").value) ? $("postSlug").value : slugify(title)
+    };
+    $("btnSavePost").disabled = true;
     try{
-      var r=await sb.schema("blog").from("posts").upsert(postToPayload(d),{onConflict:"id"});
-      if(r.error){ toast("Erro ao salvar: "+r.error.message); return; }
-      currentPostId=d.id; await refreshPosts(); selectPost(d.id); toast("Postagem salva.");
-    }catch(err){ toast("Erro: "+err.message); }
+      var r = await sb.schema("blog").from("posts").upsert(postToPayload(d),{onConflict:"id"});
+      if(r.error){ $("postError").textContent="Erro ao salvar: "+r.error.message; toast("Erro ao salvar: "+r.error.message); return; }
+      currentPostId = d.id;
+      await refreshPosts();
+      selectPost(d.id);
+      toast("Postagem salva com sucesso! O site será atualizado em ~1 min.");
+    }catch(err){
+      $("postError").textContent="Erro: "+err.message;
+      toast("Erro: "+err.message);
+    }finally{
+      $("btnSavePost").disabled = false;
+    }
   };
   $("btnDeletePost").onclick=async function(){
     if(!currentPostId){ toast("Selecione uma postagem."); return; }
@@ -336,6 +347,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     });
     tbody.querySelectorAll("button[data-i]").forEach(function(b){ b.onclick=async function(){
       var i=parseInt(b.getAttribute("data-i"),10);
+      if(!confirm("Remover o perfil de "+users[i].email+"?")) return;
       try{
         var r=await sb.schema("blog").from("profiles").delete().eq("id",users[i].id);
         if(r.error){ toast("Erro: "+r.error.message); return; }
@@ -348,17 +360,35 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     var nome=$("uNome").value.trim(), email=$("uEmail").value.trim().toLowerCase(), senha=$("uSenha").value, papel=$("uPapel").value;
     if(!email||!senha){ $("userError").textContent="Informe e-mail e senha."; return; }
     if(senha.length<6){ $("userError").textContent="Senha deve ter ao menos 6 caracteres."; return; }
+    $("btnAddUser").disabled = true;
     try{
-      var su=await sb.auth.signUp({email:email,password:senha});
+      // Usa cliente isolado sem persistir sessão para não deslogar o admin atual
+      var tempSb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: "ure_signup_tmp" }
+      });
+      var su = await tempSb.auth.signUp({
+        email: email,
+        password: senha,
+        options: { data: { nome: nome || email.split("@")[0], papel: papel } }
+      });
       if(su.error){ $("userError").textContent=su.error.message; return; }
       var uidU=(su.data.user&&su.data.user.id)||null;
       if(uidU){
-        var pi=await sb.schema("blog").from("profiles").insert({id:uidU,email:email,nome:nome,papel:papel});
-        if(pi.error){ $("userError").textContent="Usuário criado no Auth, mas falhou o perfil: "+pi.error.message; return; }
+        var pi=await sb.schema("blog").from("profiles").upsert({
+          id: uidU,
+          email: email,
+          nome: nome || email.split("@")[0],
+          papel: papel
+        }, { onConflict: "id" });
+        if(pi.error){ $("userError").textContent="Conta criada, mas erro ao atualizar papel: "+pi.error.message; return; }
       }
       $("uNome").value=""; $("uEmail").value=""; $("uSenha").value="";
-      await refreshUsers(); toast("Usuário cadastrado.");
-    }catch(err){ $("userError").textContent=err.message; }
+      await refreshUsers(); toast("Usuário cadastrado com sucesso!");
+    }catch(err){
+      $("userError").textContent=err.message;
+    }finally{
+      $("btnAddUser").disabled = false;
+    }
   };
 
   async function doLogin(){
@@ -370,37 +400,24 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     }catch(err){ $("loginError").textContent=err.message; }
   }
   $("btnLogin").onclick=doLogin;
+  $("loginPass").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
   $("btnLogout").onclick=async function(){ await sb.auth.signOut(); session=null; showLogin(); };
-  $("btnSetupSave").onclick=function(){
-    $("setupError").textContent="";
-    var url=$("setupUrl").value.trim(), key=$("setupKey").value.trim();
-    if(!url||!key){ $("setupError").textContent="Informe URL e chave."; return; }
-    saveCfg({url:url,key:key});
-    if(initClient()) showLogin(); else $("setupError").textContent="Falha ao criar o cliente Supabase.";
-  };
-  $("btnSaveSettings").onclick=function(){
-    saveCfg({url:$("sbUrl").value.trim(),key:$("sbKey").value.trim()});
-    initClient(); toast("Configuração salva.");
-  };
-  $("btnClearSettings").onclick=function(){ localStorage.removeItem(CFG_KEY); initClient(); toast("Restaurado para a configuração padrão."); };
 
   document.querySelectorAll(".tab").forEach(function(btn){
     btn.onclick=function(){
       document.querySelectorAll(".tab").forEach(function(b){b.classList.remove("active");});
       btn.classList.add("active");
       var t=btn.getAttribute("data-tab");
-      ["posts","users","settings"].forEach(function(x){ $("tab-"+x).classList.toggle("hidden",x!==t); });
+      ["posts","users"].forEach(function(x){ $("tab-"+x).classList.toggle("hidden",x!==t); });
     };
   });
 
   (async function boot(){
-    if(!initClient()){ showSetup(); return; }
     try{
       var r=await sb.auth.getSession();
       if(r.data && r.data.session){ session=r.data.session; showApp(); }
       else showLogin();
     }catch(e){ showLogin(); }
-    renderPosts(); renderUsers();
   })();
 })();
 </script>
