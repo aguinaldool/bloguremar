@@ -5,10 +5,10 @@ categoria: "projeto"
 tipo: "noticia"
 tags: ["projetos-de-vida", "estudantes", "mostra"]
 destaque: true
-data: "2026-10-20"
 date: "2026-10-20"
+data: "2026-10-20"
 autor: "Equipe de Comunicação"
-demo: true
+demo: false
 ---
 
 A Mostra de Projetos de Vida aconteceu no último sábado e reuniu estudantes de diferentes escolas da rede estadual de Marília. O evento apresentou trabalhos desenvolvidos pelos alunos ao longo do ano, com foco em autonomia, escolhas de carreira e protagonismo juvenil.

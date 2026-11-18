@@ -5,10 +5,10 @@ categoria: "material"
 tipo: "material"
 tags: ["recomposicao", "lingua-portuguesa", "guia", "professores"]
 destaque: false
-data: "2026-10-12"
 date: "2026-10-12"
+data: "2026-10-12"
 autor: "Núcleo de Formação"
-demo: true
+demo: false
 ---
 
 Foi publicado o Guia de Recomposição da Aprendizagem em Língua Portuguesa, com sugestões de atividades e sequências didáticas para professores da rede.

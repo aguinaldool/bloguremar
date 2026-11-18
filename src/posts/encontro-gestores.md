@@ -5,10 +5,10 @@ categoria: "noticia"
 tipo: "noticia"
 tags: ["gestores", "coordenadores", "reuniao"]
 destaque: false
-data: "2026-10-02"
 date: "2026-10-02"
+data: "2026-10-02"
 autor: "Coordenação de Ensino"
-demo: true
+demo: false
 ---
 
 A URE Marília promoveu o encontro mensal de gestores e coordenadores pedagógicos das escolas da região. A pauta incluiu planejamento para o próximo ano letivo, orientações sobre matrículas e acompanhamento de indicadores de aprendizagem.

@@ -5,10 +5,10 @@ categoria: "noticia"
 tipo: "noticia"
 tags: ["acolhimento", "inicio-do-ano", "estudantes"]
 destaque: false
-data: "2026-09-28"
 date: "2026-09-28"
+data: "2026-09-28"
 autor: "Equipe de Comunicação"
-demo: true
+demo: false
 ---
 
 O primeiro dia de aula é mais do que entrega de materiais e organização de carteiras. É o momento de acolher o estudante, reconhecê-lo e criar vínculos que sustentam a aprendizagem ao longo do ano.

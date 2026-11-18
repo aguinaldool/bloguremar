@@ -5,10 +5,10 @@ categoria: "noticia"
 tipo: "comunicado"
 tags: ["bimestre", "calendario", "procedimentos"]
 destaque: false
-data: "2026-10-15"
 date: "2026-10-15"
+data: "2026-10-15"
 autor: "Coordenação de Ensino"
-demo: true
+demo: false
 ---
 
 A URE Marília divulgou as orientações para o fechamento do 4º bimestre do ano letivo. O comunicado detalha prazos para lançamento de notas, conselho de classe e emissão de boletins.

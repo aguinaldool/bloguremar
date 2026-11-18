@@ -5,10 +5,10 @@ categoria: "formacao"
 tipo: "formacao"
 tags: ["avaliacao", "formacao", "professores"]
 destaque: false
-data: "2026-10-18"
 date: "2026-10-18"
+data: "2026-10-18"
 autor: "Núcleo de Formação"
-demo: true
+demo: false
 ---
 
 Inscrições abertas para a formação "Avaliação formativa na prática", voltada a professores da rede estadual de ensino de Marília e municípios da região.

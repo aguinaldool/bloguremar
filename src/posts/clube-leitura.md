@@ -5,10 +5,10 @@ categoria: "projeto"
 tipo: "projeto"
 tags: ["clube-de-leitura", "projeto", "escolas"]
 destaque: false
-data: "2026-10-05"
 date: "2026-10-05"
+data: "2026-10-05"
 autor: "Equipe de Comunicação"
-demo: true
+demo: false
 ---
 
 O Clube de Leitura da URE Marília está circulando por escolas da rede estadual. O projeto leva encontros semanais de leitura para estudantes, com mediação de professores voluntários.

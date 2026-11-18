@@ -5,10 +5,10 @@ categoria: "evento"
 tipo: "evento"
 tags: ["leitura", "encontro", "professores", "biblioteca"]
 destaque: false
-data: "2026-10-09"
 date: "2026-10-09"
+data: "2026-10-09"
 autor: "Equipe de Comunicação"
-demo: true
+demo: false
 ---
 
 Professores de diferentes municípios da região participaram do Encontro Regional de Leitura, realizado na sede da URE Marília. O evento discutiu práticas de incentivo à leitura, mediação textual e uso de bibliotecas escolares.
