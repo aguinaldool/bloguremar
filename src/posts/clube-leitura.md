@@ -6,6 +6,7 @@ tipo: "projeto"
 tags: ["clube-de-leitura", "projeto", "escolas"]
 destaque: false
 data: "2026-10-05"
+date: "2026-10-05"
 autor: "Equipe de Comunicação"
 demo: true
 ---

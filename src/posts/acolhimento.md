@@ -6,6 +6,7 @@ tipo: "noticia"
 tags: ["acolhimento", "inicio-do-ano", "estudantes"]
 destaque: false
 data: "2026-09-28"
+date: "2026-09-28"
 autor: "Equipe de Comunicação"
 demo: true
 ---

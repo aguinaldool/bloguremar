@@ -6,6 +6,7 @@ tipo: "formacao"
 tags: ["avaliacao", "formacao", "professores"]
 destaque: false
 data: "2026-10-18"
+date: "2026-10-18"
 autor: "Núcleo de Formação"
 demo: true
 ---

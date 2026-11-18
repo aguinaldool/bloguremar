@@ -6,6 +6,7 @@ tipo: "comunicado"
 tags: ["bimestre", "calendario", "procedimentos"]
 destaque: false
 data: "2026-10-15"
+date: "2026-10-15"
 autor: "Coordenação de Ensino"
 demo: true
 ---

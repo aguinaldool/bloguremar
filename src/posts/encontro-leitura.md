@@ -6,6 +6,7 @@ tipo: "evento"
 tags: ["leitura", "encontro", "professores", "biblioteca"]
 destaque: false
 data: "2026-10-09"
+date: "2026-10-09"
 autor: "Equipe de Comunicação"
 demo: true
 ---

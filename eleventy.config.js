@@ -146,14 +146,21 @@ module.exports = function (eleventyConfig) {
   // Arquivos passthrough
   eleventyConfig.addPassthroughCopy("src/assets");
 
+  // Datas puras (AAAA-MM-DD) são interpretadas pelo 11ty como meia-noite UTC.
+  // Mantemos o "horário local" ao trocar para America/Sao_Paulo para não
+  // regressar um dia (UTC-3).
+  const spDate = (dateObj) =>
+    DateTime.fromJSDate(dateObj, { zone: "utc" })
+      .setZone("America/Sao_Paulo", { keepLocalTime: true });
+
   // Filtro de data (pt-BR)
   eleventyConfig.addFilter("dateBR", (dateObj, format = "dd/MM/yyyy") => {
-    return DateTime.fromJSDate(dateObj, { zone: "America/Sao_Paulo" }).toFormat(format);
+    return spDate(dateObj).toFormat(format);
   });
 
   // Filtro de data ISO
   eleventyConfig.addFilter("dateISO", (dateObj) => {
-    return DateTime.fromJSDate(dateObj, { zone: "America/Sao_Paulo" }).toISODate();
+    return spDate(dateObj).toISODate();
   });
 
   // Filtro de slug

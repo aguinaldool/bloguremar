@@ -6,6 +6,7 @@ tipo: "noticia"
 tags: ["projetos-de-vida", "estudantes", "mostra"]
 destaque: true
 data: "2026-10-20"
+date: "2026-10-20"
 autor: "Equipe de Comunicação"
 demo: true
 ---

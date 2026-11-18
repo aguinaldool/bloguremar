@@ -6,6 +6,7 @@ tipo: "noticia"
 tags: ["gestores", "coordenadores", "reuniao"]
 destaque: false
 data: "2026-10-02"
+date: "2026-10-02"
 autor: "Coordenação de Ensino"
 demo: true
 ---

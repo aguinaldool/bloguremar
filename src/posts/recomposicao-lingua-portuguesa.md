@@ -6,6 +6,7 @@ tipo: "material"
 tags: ["recomposicao", "lingua-portuguesa", "guia", "professores"]
 destaque: false
 data: "2026-10-12"
+date: "2026-10-12"
 autor: "Núcleo de Formação"
 demo: true
 ---
