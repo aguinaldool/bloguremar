@@ -11,7 +11,7 @@ CREATE OR REPLACE FUNCTION blog.disparar_deploy_hook()
 RETURNS TRIGGER AS $fn$
 BEGIN
   PERFORM net.http_post(
-    url := 'https://api.vercel.com/v1/integrations/deploy/prj_K2plYHAOWGFTMaJieDA4bVhEiT0W/eLtt7N6eut',
+    url := '<DEPLOY_HOOK_URL_CONFIGURADA_NO_BANCO>',
     body := '{}'::jsonb,
     params := '{}'::jsonb,
     headers := '{"Content-Type":"application/json"}'::jsonb,
