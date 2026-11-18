@@ -70,12 +70,11 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
 
   <div id="loginView" class="login card hidden">
     <h2>Entrar</h2>
-    <p class="muted">Acesso restrito a usuários cadastrados no Supabase.</p>
+    <p class="muted">Use seu e-mail e senha de administrador da URE Marília.</p>
     <div class="field"><label for="loginEmail">E-mail</label><input type="email" id="loginEmail" autocomplete="username"></div>
     <div class="field"><label for="loginPass">Senha</label><input type="password" id="loginPass" autocomplete="current-password"></div>
     <div class="bar">
       <button class="btn btn-primary" id="btnLogin">Entrar</button>
-      <button class="btn btn-sm" id="btnOpenSettings">Configurações</button>
     </div>
     <div class="error" id="loginError"></div>
   </div>
@@ -194,6 +193,8 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
 (function(){
   "use strict";
   var CFG_KEY = "ure_blog_cfg_v1";
+  var DEFAULT_URL = "https://lymrixekprobknxvoomk.supabase.co";
+  var DEFAULT_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5bXJpeGVrcHJvYmtueHZvb21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ4NDM1MjcsImV4cCI6MjExMDQxOTUyN30.ZK0wp4o2XZwJ98a6EdPzKe85fTA1S3G9ex2SmsgBcbw";
   var sb = null, session = null, posts = [], users = [], currentPostId = null;
 
   function $(id){ return document.getElementById(id); }
@@ -201,7 +202,14 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   function esc(s){ return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
   function slugify(s){ return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""); }
   function uidUUID(){ return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c==="x"?r:(r&0x3|0x8);return v.toString(16);}); }
-  function loadCfg(){ try{ return JSON.parse(localStorage.getItem(CFG_KEY)||"{}"); }catch(e){ return {}; } }
+  function loadCfg(){
+    try{
+      var saved = JSON.parse(localStorage.getItem(CFG_KEY)||"{}");
+      return { url: saved.url || DEFAULT_URL, key: saved.key || DEFAULT_KEY };
+    }catch(e){
+      return { url: DEFAULT_URL, key: DEFAULT_KEY };
+    }
+  }
   function saveCfg(c){ localStorage.setItem(CFG_KEY,JSON.stringify(c||{})); }
   function userId(){ return (session && session.user && session.user.id) || null; }
 
@@ -363,7 +371,6 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   }
   $("btnLogin").onclick=doLogin;
   $("btnLogout").onclick=async function(){ await sb.auth.signOut(); session=null; showLogin(); };
-  $("btnOpenSettings").onclick=function(){ showSetup(); };
   $("btnSetupSave").onclick=function(){
     $("setupError").textContent="";
     var url=$("setupUrl").value.trim(), key=$("setupKey").value.trim();
@@ -375,7 +382,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     saveCfg({url:$("sbUrl").value.trim(),key:$("sbKey").value.trim()});
     initClient(); toast("Configuração salva.");
   };
-  $("btnClearSettings").onclick=function(){ saveCfg({}); initClient(); showSetup(); toast("Desconectado."); };
+  $("btnClearSettings").onclick=function(){ localStorage.removeItem(CFG_KEY); initClient(); toast("Restaurado para a configuração padrão."); };
 
   document.querySelectorAll(".tab").forEach(function(btn){
     btn.onclick=function(){
