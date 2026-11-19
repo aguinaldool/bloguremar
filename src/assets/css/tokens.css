@@ -1,66 +1,66 @@
 /* ========================================
-   Design tokens — Rede conectada
+   Design tokens — Blog URE Marília (Moderno & Limpo)
    ======================================== */
 
 :root {
   color-scheme: light;
 
-  /* Fundo e superfície — tema cartográfico claro (pergaminho) */
-  --color-bg: #F4EFE3;
-  --color-surface: #FCF8EF;
-  --color-surface-alt: #EDE3CF;
+  /* Fundo e superfície — tema minimalista moderno */
+  --color-bg: #FAFAFA;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F5F5F7;
 
-  /* Tinta e texto */
-  --color-ink: #1E2B23;
-  --color-ink-soft: #51604F;
-  --color-muted: #8A9385;
-  --color-line: #D8C9AC;
+  /* Tinta e texto — alto contraste para legibilidade */
+  --color-ink: #111827;
+  --color-ink-soft: #4B5563;
+  --color-muted: #9CA3AF;
+  --color-line: #E5E7EB;
 
-  /* Cores por seção — UI em fundo claro (tons "tinta") */
-  --color-blue: #1C74B8;    /* Notícias */
-  --color-teal: #0C9483;    /* Formações */
-  --color-amber: #B9771B;   /* Materiais */
-  --color-violet: #6F4FC0;  /* Escolas / Projetos */
-  --color-coral: #D2512A;   /* Comunicados */
-  --color-green: #2E8F44;   /* Eventos */
+  /* Cores por seção — modernas e acessíveis */
+  --color-blue: #2563EB;    /* Notícias */
+  --color-teal: #0D9488;    /* Formações */
+  --color-amber: #D97706;   /* Materiais */
+  --color-violet: #7C3AED;  /* Escolas / Projetos */
+  --color-coral: #DC2626;   /* Comunicados */
+  --color-green: #16A34A;   /* Eventos */
 
-  /* Matizes das capas geradas (sobre tiles escuros) — mantidas vivas */
-  --amber: #F2A93C;
-  --blue: #5FB6F2;
-  --green: #76D07A;
-  --magenta: #F26FA8;
-  --orange: #F2814E;
-  --teal: #34D2B0;
-  --violet: #B79CFF;
-  --lime: #C2E45F;
-  --cover-bg: #E9DCC1;
+  /* Matizes das capas geradas — vibrantes mas equilibradas */
+  --amber: #F59E0B;
+  --blue: #3B82F6;
+  --green: #22C55E;
+  --magenta: #EC4899;
+  --orange: #F97316;
+  --teal: #14B8A6;
+  --violet: #8B5CF6;
+  --lime: #84CC16;
+  --cover-bg: #F3F4F6;
 
   /* Estados */
-  --color-success: #4ADE80;
-  --color-warning: #FFB454;
-  --color-danger: #FF5D5D;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
 
-  /* Tipografia */
-  --font-heading: "Fraunces", Georgia, "Times New Roman", serif;
+  /* Tipografia — moderna, sem serifa, alta legibilidade */
+  --font-heading: "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 
-  /* Escala tipográfica */
+  /* Escala tipográfica — moderna e legível */
   --text-xs: 0.75rem;      /* 12px */
   --text-sm: 0.875rem;     /* 14px */
-  --text-base: 1rem;       /* 16px */
-  --text-lg: 1.125rem;     /* 18px */
-  --text-xl: 1.25rem;      /* 20px */
-  --text-2xl: 1.5rem;      /* 24px */
-  --text-3xl: 1.875rem;    /* 30px */
-  --text-4xl: 2.25rem;     /* 36px */
-  --text-5xl: 3rem;        /* 48px */
+  --text-base: 1.0625rem;  /* 17px - base maior para legibilidade */
+  --text-lg: 1.1875rem;    /* 19px */
+  --text-xl: 1.375rem;     /* 22px */
+  --text-2xl: 1.625rem;    /* 26px */
+  --text-3xl: 2rem;        /* 32px */
+  --text-4xl: 2.5rem;      /* 40px */
+  --text-5xl: 3.25rem;     /* 52px */
 
-  --leading-tight: 1.25;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.75;
+  --leading-tight: 1.2;
+  --leading-normal: 1.6;      /* Mais espaçamento para leitura confortável */
+  --leading-relaxed: 1.8;
 
-  /* Espaçamento */
+  /* Espaçamento — generoso e arejado */
   --space-1: 0.25rem;   /* 4px */
   --space-2: 0.5rem;    /* 8px */
   --space-3: 0.75rem;   /* 12px */
@@ -72,28 +72,28 @@
   --space-12: 3rem;     /* 48px */
   --space-16: 4rem;     /* 64px */
 
-  /* Bordas e sombras */
-  --radius-sm: 6px;
-  --radius: 14px;
+  /* Bordas e sombras — suaves e modernas */
+  --radius-sm: 8px;
+  --radius: 12px;
   --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-  --shadow: 0 14px 40px -12px rgb(0 0 0 / 0.5);
-  --shadow-lg: 0 24px 60px -20px rgb(0 0 0 / 0.6);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08);
+  --shadow: 0 10px 30px -10px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 20px 50px -15px rgb(0 0 0 / 0.15);
 
   /* Transições */
-  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-fast: 150ms;
   --duration-normal: 250ms;
 
   /* Largura de conteúdo */
-  --container-max: 1240px;
+  --container-max: 1200px;
   --container-padding: 1.5rem;
 
   /* Cabeçalho fixo */
-  --header-h: 68px;
+  --header-h: 72px;
 }
 
 /* ========================================
