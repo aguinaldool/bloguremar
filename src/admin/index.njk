@@ -41,6 +41,13 @@ h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 10px}h3{font-size:14px;m
 table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);font-size:13px}th{font-size:12px;color:var(--muted);text-transform:uppercase}
 .toast{position:fixed;right:16px;bottom:16px;background:#0E1F35;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:50}
 .toast.show{opacity:1;transform:none}
+.anexo-list-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fafbfc}
+.anexo-list-item .anexo-icon{font-size:18px;flex-shrink:0}
+.anexo-list-item .anexo-info{flex:1;min-width:0}
+.anexo-list-item .anexo-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.anexo-list-item .anexo-size{font-size:11px;color:var(--muted)}
+.anexo-list-item .anexo-remove{background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;padding:4px}
+.anexo-list-item .anexo-remove:hover{opacity:.7}
 .login{max-width:420px;margin:50px auto}
 .error{color:var(--red);font-size:13px;margin-top:6px}
 .search input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px}
@@ -118,6 +125,25 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
             <div class="field"><label for="tags">Tags (vírgula)</label><input type="text" id="tags" placeholder="ex: leitura, professores"></div>
             <div class="field"><label><input type="checkbox" id="destaque"> Destaque na página inicial</label></div>
             <div class="field"><label for="conteudo">Conteúdo (Markdown)</label><textarea id="conteudo"></textarea></div>
+            
+            <!-- Anexos (Google Drive) -->
+            <div class="field">
+              <label>Anexos</label>
+              <div class="notice">Arquivos anexados serão salvos no Google Drive e ficam públicos para download.</div>
+              <div class="bar" style="margin-bottom:10px">
+                <button type="button" class="btn btn-sm" id="btnAddAnexo">📎 Adicionar arquivo</button>
+                <input type="file" id="anexoInput" multiple class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar,.png,.jpg,.jpeg,.gif">
+                <span class="muted" id="anexoHelp">PDF, DOC, XLS, imagens, etc. (máx 50MB por arquivo)</span>
+              </div>
+              <div id="anexoProgress" class="hidden" style="margin-bottom:10px">
+                <div style="background:var(--line);border-radius:6px;height:6px;overflow:hidden">
+                  <div id="anexoProgressBar" style="background:var(--blue);height:100%;width:0%;transition:width .3s"></div>
+                </div>
+                <div class="muted" id="anexoProgressText" style="font-size:12px;margin-top:4px">Enviando...</div>
+              </div>
+              <ul id="anexoList" style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px"></ul>
+            </div>
+
             <div class="bar">
               <button type="submit" class="btn btn-primary" id="btnSavePost">Salvar postagem</button>
               <button type="button" class="btn btn-danger" id="btnDeletePost">Excluir</button>
@@ -243,6 +269,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
       categoria: p.categoria||"noticia",
       tipo: p.categoria||"noticia",
       tags: p.tags||[],
+      anexos: p.anexos||[],
       destaque: !!p.destaque,
       publicado_em: dateStr + "T12:00:00Z",
       autor: p.autor||"Equipe URE Marília",
@@ -255,7 +282,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   function payloadToPost(r){
     return {
       id: r.id, title: r.titulo, resumo: r.resumo, categoria: r.categoria||r.tipo,
-      tags: r.tags||[], destaque: !!r.destaque, data: (r.publicado_em||"").slice(0,10),
+      tags: r.tags||[], anexos: r.anexos||[], destaque: !!r.destaque, data: (r.publicado_em||"").slice(0,10),
       autor: r.autor||"", status: r.status||"draft", conteudo: r.conteudo||"", slug: r.slug||""
     };
   }
@@ -293,6 +320,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     $("postId").value=p.id; $("postSlug").value=p.slug||""; $("title").value=p.title||""; $("resumo").value=p.resumo||""; $("categoria").value=p.categoria||"noticia";
     $("data").value=p.data||""; $("autor").value=p.autor||"Equipe URE Marília"; $("status").value=p.status||"published";
     $("tags").value=(p.tags||[]).join(", "); $("destaque").checked=!!p.destaque; $("conteudo").value=p.conteudo||"";
+    anexos = (p.anexos||[]).slice(); renderAnexos();
     $("postFormTitle").textContent="Editar postagem"; renderPosts();
   }
   function clearPost(){
@@ -304,6 +332,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     $("autor").value="Equipe URE Marília";
     $("status").value="published";
     $("data").value=new Date().toISOString().slice(0,10);
+    anexos = []; renderAnexos();
     $("postFormTitle").textContent="Nova postagem";
     renderPosts();
   }
@@ -326,6 +355,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
       autor: $("autor").value.trim() || "Equipe URE Marília",
       status: $("status").value,
       tags: $("tags").value.split(",").map(function(s){return slugify(s.trim())||s.trim();}).filter(Boolean),
+      anexos: anexos.slice(),
       destaque: $("destaque").checked,
       conteudo: $("conteudo").value,
       slug: (!isNew && $("postSlug").value) ? $("postSlug").value : slugify(title)
@@ -368,6 +398,140 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   $("btnExport").onclick=function(){ var blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),posts:posts},null,2)],{type:"application/json"}); var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="blog-ure-posts.json"; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},1000); toast("JSON exportado."); };
   $("btnImport").onclick=function(){ $("fileInput").click(); };
   $("fileInput").onchange=function(e){ var f=e.target.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(){ try{ var d=JSON.parse(r.result); var arr=Array.isArray(d)?d:(d.posts||[]); if(!arr.length){toast("Nenhuma publicação.");return;} posts=arr.map(function(p){p.id=p.id||uidUUID(); p.tags=p.tags||[]; return p;}); renderPosts(); toast("Importado. Salve cada postagem para gravar no banco."); }catch(err){ toast("Arquivo inválido."); } }; r.readAsText(f); e.target.value=""; };
+
+  // ========================================
+  // Anexos (Google Drive)
+  // ========================================
+  var anexos = []; // Array de {id, nome, tamanho, tipo, url, driveId}
+  var EDGE_FUNCTION_URL = "/functions/v1/upload-anexo";
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  }
+
+  function getFileIcon(tipo) {
+    if (!tipo) return "📄";
+    if (tipo.indexOf("pdf") !== -1) return "📕";
+    if (tipo.indexOf("image") !== -1) return "🖼️";
+    if (tipo.indexOf("word") !== -1 || tipo.indexOf("document") !== -1) return "📘";
+    if (tipo.indexOf("sheet") !== -1 || tipo.indexOf("excel") !== -1) return "📗";
+    if (tipo.indexOf("presentation") !== -1 || tipo.indexOf("powerpoint") !== -1) return "📙";
+    if (tipo.indexOf("zip") !== -1 || tipo.indexOf("rar") !== -1) return "📦";
+    if (tipo.indexOf("text") !== -1) return "📝";
+    return "📄";
+  }
+
+  function renderAnexos() {
+    var list = $("anexoList");
+    list.innerHTML = "";
+    if (!anexos.length) {
+      list.innerHTML = '<li class="muted" style="padding:8px">Nenhum anexo adicionado.</li>';
+      return;
+    }
+    anexos.forEach(function(a, idx) {
+      var li = document.createElement("li");
+      li.className = "anexo-list-item";
+      li.innerHTML = '<span class="anexo-icon">' + getFileIcon(a.tipo) + '</span>' +
+        '<div class="anexo-info">' +
+        '<div class="anexo-name">' + esc(a.nome) + '</div>' +
+        '<div class="anexo-size">' + formatFileSize(a.tamanho) + '</div>' +
+        '</div>' +
+        '<button type="button" class="anexo-remove" data-idx="' + idx + '" title="Remover anexo">✕</button>';
+      list.appendChild(li);
+    });
+    // Bind remove buttons
+    list.querySelectorAll(".anexo-remove").forEach(function(btn) {
+      btn.onclick = function() {
+        var idx = parseInt(this.getAttribute("data-idx"), 10);
+        if (confirm("Remover o anexo \"" + anexos[idx].nome + "\"?")) {
+          anexos.splice(idx, 1);
+          renderAnexos();
+        }
+      };
+    });
+  }
+
+  async function uploadAnexo(file) {
+    $("anexoProgress").classList.remove("hidden");
+    $("anexoProgressBar").style.width = "0%";
+    $("anexoProgressText").textContent = "Enviando " + file.name + "...";
+
+    try {
+      var formData = new FormData();
+      formData.append("file", file);
+
+      // Obtém token de sessão
+      var sessionData = await sb.auth.getSession();
+      var token = sessionData.data.session ? sessionData.data.session.access_token : null;
+      
+      if (!token) {
+        throw new Error("Sessão expirada. Faça login novamente.");
+      }
+
+      // Monta URL completa da Edge Function
+      var supabaseUrl = SUPABASE_URL.replace(".supabase.co", "");
+      var functionUrl = supabaseUrl + ".supabase.co" + EDGE_FUNCTION_URL;
+
+      var response = await fetch(functionUrl, {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + token
+        },
+        body: formData
+      });
+
+      $("anexoProgressBar").style.width = "70%";
+
+      var result = await response.json();
+
+      if (!response.ok || result.error) {
+        throw new Error(result.error || "Erro no upload");
+      }
+
+      $("anexoProgressBar").style.width = "100%";
+      $("anexoProgressText").textContent = "Enviado com sucesso!";
+
+      if (result.success && result.anexo) {
+        anexos.push(result.anexo);
+        renderAnexos();
+        toast("Anexo adicionado: " + file.name);
+      }
+
+      setTimeout(function() {
+        $("anexoProgress").classList.add("hidden");
+      }, 1500);
+
+    } catch (error) {
+      $("anexoProgress").classList.add("hidden");
+      toast("Erro ao enviar: " + error.message);
+      throw error;
+    }
+  }
+
+  $("btnAddAnexo").onclick = function() {
+    $("anexoInput").click();
+  };
+
+  $("anexoInput").onchange = async function(e) {
+    var files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    for (var i = 0; i < files.length; i++) {
+      try {
+        await uploadAnexo(files[i]);
+      } catch (err) {
+        console.error("Erro no arquivo " + files[i].name + ":", err);
+      }
+    }
+    
+    // Reset input
+    e.target.value = "";
+  };
+
+  // Inicializa lista vazia
+  renderAnexos();
 
   // ========================================
   // Gerenciamento de Tags (escopo admin)

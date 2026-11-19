@@ -32,5 +32,25 @@ layout: layouts/base.njk
     {{ content | safe }}
   </div>
 
+  {% if anexos and anexos.length %}
+  <section class="anexos">
+    <h3>
+      <svg class="ic ic-sm" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-clip"/></svg>
+      Anexos
+    </h3>
+    <ul class="anexo-lista">
+      {% for anexo in anexos %}
+      <li class="anexo-item">
+        <a href="{{ anexo.url }}" target="_blank" rel="noopener noreferrer" class="anexo-link">
+          <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>
+          <span>{{ anexo.nome }}</span>
+          {% if anexo.tamanho %}<small>({{ anexo.tamanho | fileSize }})</small>{% endif %}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
   <p style="margin-top:2rem;"><a href="/" class="btn btn-outline btn-sm"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-arr-l"/></svg> Voltar para o início</a></p>
 </article>

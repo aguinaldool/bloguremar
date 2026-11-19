@@ -224,6 +224,14 @@ module.exports = function (eleventyConfig) {
     (arr || []).filter((t) => t && t !== "post")
   );
 
+  // Formata tamanho de arquivo em bytes para formato legível
+  eleventyConfig.addFilter("fileSize", (bytes) => {
+    if (!bytes || typeof bytes !== "number") return "";
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  });
+
   // Matiz de uma tag (determínistico)
   eleventyConfig.addFilter("tagHue", (name) => {
     const hues = ["amber", "blue", "green", "magenta", "orange", "teal", "violet", "lime"];

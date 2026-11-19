@@ -45,6 +45,7 @@ function render(p) {
   const categoria = p.categoria || p.tipo || "noticia";
   const tipo = p.tipo || categoria;
   const tags = Array.isArray(p.tags) ? p.tags : [];
+  const anexos = Array.isArray(p.anexos) ? p.anexos : [];
   const lines = [
     "---",
     "title: " + q(p.titulo),
@@ -57,11 +58,26 @@ function render(p) {
     "data: " + q(data),
     "autor: " + q(p.autor || ""),
     "demo: " + (p.demo ? "true" : "false"),
-    "---",
-    "",
-    p.conteudo || "",
-    "",
   ];
+  
+  // Adiciona anexos no front matter se houver
+  if (anexos.length > 0) {
+    lines.push("anexos:");
+    for (const anexo of anexos) {
+      lines.push("  - id: " + q(anexo.id || ""));
+      lines.push("    nome: " + q(anexo.nome || ""));
+      lines.push("    tamanho: " + (anexo.tamanho || 0));
+      lines.push("    tipo: " + q(anexo.tipo || ""));
+      lines.push("    url: " + q(anexo.url || ""));
+      lines.push("    driveId: " + q(anexo.driveId || ""));
+    }
+  }
+  
+  lines.push("---");
+  lines.push("");
+  lines.push(p.conteudo || "");
+  lines.push("");
+  
   return lines.join("\n");
 }
 
