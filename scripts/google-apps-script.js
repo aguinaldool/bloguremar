@@ -1,5 +1,6 @@
 /**
  * Google Apps Script - Upload de Anexos para Google Drive
+ * Blog URE Marília
  * 
  * COMO USAR:
  * 1. Acesse https://script.google.com
@@ -10,14 +11,11 @@
  * 6. Executar como: "Eu"
  * 7. Quem tem acesso: "Qualquer pessoa"
  * 8. Copie a URL gerada
- * 9. Cole no admin do blog (variável EDGE_FUNCTION_URL)
+ * 9. Cole no admin do blog (variável APPS_SCRIPT_URL)
  */
 
 // ID da pasta no Google Drive onde os anexos serão salvos
-// Crie uma pasta no Drive e copie o ID da URL
-// Exemplo: https://drive.google.com/drive/folders/1ABC123xyz
-// O ID é: 1ABC123xyz
-const PASTA_ID = 'COLE_AQUI_O_ID_DA_PASTA';
+const PASTA_ID = '1qnTkMsRtpQ7NyULMobJG4zDD04isXsnn';
 
 /**
  * Processa POST requests com upload de arquivo
