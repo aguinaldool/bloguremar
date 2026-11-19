@@ -9,37 +9,8 @@ permalink: /
 {% set cloud = collections.posts | tagCloud %}
 {% set latest = collections.posts[0] %}
 
-<div class="bg" aria-hidden="true">
-  <div class="bg-glow"></div>
-  <div class="bg-contours" id="bgContours"></div>
-</div>
-<div class="frame" aria-hidden="true">
-  <span class="f-tl">22°12′S</span><span class="f-tr">49°56′W</span>
-  <span class="f-bl">ALT 600 M</span><span class="f-br">SIRGAS 2000 · UTM 23S</span>
-</div>
-
 <div class="page">
   <section class="hero hero--home" id="topo">
-    <svg class="hero-route" viewBox="0 0 1200 300" preserveAspectRatio="none" aria-hidden="true">
-      <path class="route" d="M-20 220 C150 120 260 260 420 190 S700 60 860 140 S1100 240 1240 160"/>
-      <path class="waypoint" d="M414 184h12M420 178v12" fill="none"/>
-      <path class="waypoint" d="M854 134h12M860 128v12" fill="none"/>
-      <circle class="route-dot" r="4.5">
-        <animateMotion dur="16s" repeatCount="indefinite" path="M-20 220 C150 120 260 260 420 190 S700 60 860 140 S1100 240 1240 160"/>
-      </circle>
-    </svg>
-    <svg class="hero-rose" viewBox="0 0 120 120" aria-hidden="true">
-      <g class="rose-ring" fill="none" stroke="currentColor">
-        <circle cx="60" cy="60" r="52" stroke-width="1"/>
-        <circle cx="60" cy="60" r="40" stroke-width=".7" stroke-dasharray="3 4"/>
-        <path d="M60 8v14M60 98v14M8 60h14M98 60h14M23 23l10 10M87 87l10 10M97 23 87 33M33 87l-10 10" stroke-width="1"/>
-      </g>
-      <path class="rose-n" d="M60 26 66 60 60 94 54 60Z"/>
-      <text x="60" y="20" text-anchor="middle">N</text>
-      <text x="60" y="108" text-anchor="middle">S</text>
-      <text x="14" y="63" text-anchor="middle">W</text>
-      <text x="106" y="63" text-anchor="middle">E</text>
-    </svg>
     <p class="hero-kicker stage">CADERNO DA REDE · MARÍLIA</p>
     <h1 class="stage">URE Marília<span class="dot">.</span></h1>
     <p class="hero-lede stage">{{ site.tagline }} <em>{{ site.description }}</em></p>
@@ -140,15 +111,13 @@ permalink: /
           <svg class="ic" aria-hidden="true"><use href="#i-layers"/></svg>
           <h3>Sobre a URE</h3>
         </div>
-        <div class="about-map" aria-hidden="true">{{ "sobre-ure-marilia" | coverSVG("URE Marília", "projeto") | safe }}</div>
-        <p class="about-txt">{{ site.description }}</p>
+        <div class="about-txt">{{ site.description }}</div>
         <dl class="about-stats">
           <div><dt>Publicações</dt><dd>{{ collections.posts.length }}</dd></div>
           <div><dt>Tags ativas</dt><dd>{{ cloud.length }}</dd></div>
           <div><dt>Última</dt><dd>{{ latest.date | dateBR }}</dd></div>
           <div><dt>Ano</dt><dd>{{ now | dateBR("yyyy") }}</dd></div>
         </dl>
-        <p class="about-coords"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-pin"/></svg>{{ site.coords }}</p>
       </section>
     </aside>
   </div>

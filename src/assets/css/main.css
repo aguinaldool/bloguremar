@@ -324,67 +324,6 @@
   color: var(--amber);
 }
 
-/* fundo em camadas (somente na home) */
-.bg {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  overflow: hidden;
-}
-.bg-glow {
-  position: absolute;
-  inset: -10%;
-  background:
-    radial-gradient(42% 34% at 12% 8%, rgba(242, 169, 60, 0.16), transparent 70%),
-    radial-gradient(40% 36% at 88% 22%, rgba(95, 182, 242, 0.14), transparent 70%),
-    radial-gradient(46% 40% at 55% 96%, rgba(118, 208, 122, 0.12), transparent 70%),
-    linear-gradient(160deg, #FCF8EF, #F4EFE3 55%);
-}
-.bg-contours {
-  position: absolute;
-  inset: -4%;
-  opacity: 0.9;
-}
-.bg-contours svg { width: 100%; height: 100%; }
-.bgc-a { animation: drifta 70s ease-in-out infinite alternate; }
-.bgc-b { animation: driftb 84s ease-in-out infinite alternate; }
-@keyframes drifta { to { transform: translate(26px, -18px); } }
-@keyframes driftb { to { transform: translate(-22px, 20px); } }
-.bgc-line { fill: none; stroke: var(--color-line); stroke-width: 1; opacity: 0.8; }
-.bgc-index { stroke: var(--color-muted); stroke-width: 1.6; opacity: 0.9; }
-.bgc-amber { stroke: rgba(255, 180, 84, 0.14); stroke-width: 1.6; }
-.bgc-blue { stroke: rgba(84, 184, 255, 0.12); stroke-width: 1.6; }
-
-/* moldura de graticule */
-.frame {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-.frame::before {
-  content: "";
-  position: absolute;
-  inset: 10px;
-  border: 1px solid rgba(150, 128, 90, 0.55);
-  border-radius: 4px;
-}
-.frame span {
-  position: absolute;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  color: var(--color-muted);
-  background: var(--color-bg);
-  padding: 0 8px;
-}
-.frame .f-tl { top: 4px; left: 34px; }
-.frame .f-tr { top: 4px; right: 34px; }
-.frame .f-bl { bottom: 4px; left: 34px; }
-.frame .f-br { bottom: 4px; right: 34px; }
-@media (max-width: 1000px) { .frame { display: none; } }
-
 /* wrapper da home */
 .page {
   position: relative;
@@ -398,51 +337,7 @@
 .hero--home {
   position: relative;
   padding: 34px 6px 40px;
-  overflow: hidden;
 }
-.hero-route {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: 0.8;
-}
-.hero-route .route {
-  fill: none;
-  stroke: var(--amber);
-  stroke-width: 1.6;
-  stroke-dasharray: 8 7;
-  opacity: 0.4;
-  animation: routedash 26s linear infinite;
-}
-@keyframes routedash { to { stroke-dashoffset: -600; } }
-.hero-route .route-dot {
-  fill: var(--amber);
-  filter: drop-shadow(0 0 6px rgba(255, 180, 84, 0.9));
-}
-.hero-route .waypoint {
-  stroke: var(--blue);
-  stroke-width: 1.6;
-  opacity: 0.65;
-}
-.hero-rose {
-  position: absolute;
-  right: 2%;
-  top: 8px;
-  width: 150px;
-  height: 150px;
-  color: var(--color-muted);
-  opacity: 0.5;
-  pointer-events: none;
-}
-.hero-rose .rose-ring {
-  transform-origin: 60px 60px;
-  animation: rosespin 90s linear infinite;
-}
-@keyframes rosespin { to { transform: rotate(360deg); } }
-.hero-rose text { font-family: var(--font-mono); font-size: 9px; fill: var(--color-ink-soft); }
-.hero-rose .rose-n { fill: var(--amber); stroke: none; }
 .hero-kicker {
   font-family: var(--font-mono);
   font-size: 11.5px;
@@ -835,14 +730,6 @@
 .side-clear { width: 100%; margin-top: 12px; }
 
 /* sobre */
-.about-map {
-  height: 96px;
-  border: 1px solid var(--color-line);
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 13px;
-  background: var(--cover-bg);
-}
 .about-txt { font-size: 13.5px; color: var(--color-ink-soft); line-height: 1.6; }
 .about-stats {
   display: grid;
@@ -866,16 +753,6 @@
   font-weight: 600;
   color: var(--color-ink);
   margin: 0;
-}
-.about-coords {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.1em;
-  color: var(--color-muted);
-  margin-top: 13px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
 }
 
 /* reveal ao rolar */
