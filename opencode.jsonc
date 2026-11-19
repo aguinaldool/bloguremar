@@ -4,7 +4,7 @@
     "servers": {
       "openpencil": {
         "type": "local",
-        "command": ["C:\\Users\\Admin\\AppData\\Roaming\\npm\\openpencil-mcp.cmd"],
+        "command": ["C:\\Program Files\\nodejs\\npx.cmd", "-y", "@open-pencil/mcp"],
         "environment": {
           "PATH": "C:\\Program Files\\nodejs\\;C:\\Users\\Admin\\AppData\\Roaming\\npm\\;{env:PATH}"
         }

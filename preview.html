@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URE Marília — Design Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-bg: #FAFAFA;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F5F5F7;
+  --color-ink: #111827;
+  --color-ink-soft: #4B5563;
+  --color-muted: #9CA3AF;
+  --color-line: #E5E7EB;
+  --color-blue: #2563EB;
+  --color-teal: #0D9488;
+  --color-amber: #D97706;
+  --color-violet: #7C3AED;
+  --color-coral: #DC2626;
+  --color-green: #16A34A;
+  --font-heading: "DM Sans", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.1875rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.625rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+  --text-5xl: 3.25rem;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --radius: 12px;
+  --radius-xl: 24px;
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08);
+  --shadow: 0 10px 30px -10px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 20px 50px -15px rgb(0 0 0 / 0.15);
+  --container-max: 1200px;
+  --container-padding: 1.5rem;
+  --header-h: 56px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-normal: 250ms;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; padding: 0;
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); font-weight: 700; line-height: 1.2; }
+a { color: var(--color-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Header */
+.site-header {
+  position: sticky; top: 0; z-index: 50;
+  background: color-mix(in srgb, var(--color-surface) 90%, transparent);
+  border-bottom: 1px solid var(--color-line);
+  backdrop-filter: blur(8px);
+  height: var(--header-h);
+  display: flex; align-items: center;
+}
+.header-wrap {
+  max-width: var(--container-max);
+  margin: 0 auto; padding: 0 var(--container-padding);
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-mark {
+  width: 30px; height: 30px;
+  background: var(--color-blue); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 14px;
+}
+.logo-text {
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: 1.125rem;
+  color: var(--color-ink);
+}
+.header-nav { display: flex; gap: 8px; align-items: center; }
+.header-nav a {
+  font-size: var(--text-sm); font-weight: 500;
+  color: var(--color-ink-soft); padding: 6px 12px;
+  border-radius: 8px; transition: background 0.2s;
+}
+.header-nav a:hover { background: var(--color-surface-alt); text-decoration: none; color: var(--color-ink); }
+
+/* Page wrapper */
+.page {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 8px var(--container-padding) 40px;
+}
+
+/* Hero removido — apenas header com logo */
+
+/* Content grid */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 32px;
+  margin-top: 8px;
+}
+@media (max-width: 900px) {
+  .content-grid { grid-template-columns: 1fr; }
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: wrap; margin-bottom: 24px;
+}
+.search {
+  flex: 1; min-width: 200px; position: relative;
+}
+.search input {
+  width: 100%; padding: 10px 14px 10px 38px;
+  border: 1px solid var(--color-line); border-radius: 10px;
+  font-size: var(--text-sm); background: var(--color-surface);
+  font-family: var(--font-body);
+}
+.search input:focus { outline: none; border-color: var(--color-blue); box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1); }
+.search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-muted); }
+.select {
+  padding: 10px 14px; border: 1px solid var(--color-line);
+  border-radius: 10px; font-size: var(--text-sm);
+  background: var(--color-surface); font-family: var(--font-body);
+  cursor: pointer;
+}
+
+/* Post cards */
+.posts { display: flex; flex-direction: column; gap: 20px; }
+.post-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s, border-color 0.25s;
+}
+.post-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-blue);
+  box-shadow: var(--shadow-lg);
+}
+.post-body { padding: 20px 24px 18px; }
+.post-title {
+  font-family: var(--font-heading); font-weight: 700;
+  font-size: 1.375rem; line-height: 1.25;
+  margin: 0 0 8px;
+}
+.post-title a { color: var(--color-ink); }
+.post-title a:hover { color: var(--color-blue); text-decoration: none; }
+.post-meta {
+  display: flex; align-items: center; gap: 8px;
+  font-size: var(--text-sm); color: var(--color-muted);
+  margin-bottom: 10px; flex-wrap: wrap;
+}
+.post-meta .sep { opacity: 0.4; }
+.post-cat { font-weight: 600; }
+.post-excerpt {
+  color: var(--color-ink-soft); font-size: var(--text-sm);
+  line-height: 1.6; margin: 0 0 14px;
+}
+.post-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip {
+  font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 999px;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface-alt);
+  color: var(--color-ink-soft);
+  cursor: pointer; font-family: var(--font-body);
+}
+.chip:hover { border-color: var(--color-muted); }
+.post-foot { display: flex; justify-content: flex-end; }
+.read-link {
+  font-size: var(--text-sm); font-weight: 600;
+  color: var(--color-blue); display: inline-flex;
+  align-items: center; gap: 6px;
+}
+.read-link:hover { gap: 10px; text-decoration: none; }
+
+/* Sidebar */
+.sidebar {
+  position: sticky; top: calc(var(--header-h) + 18px);
+  display: flex; flex-direction: column; gap: 18px;
+  max-height: calc(100vh - var(--header-h) - 34px);
+  overflow-y: auto;
+}
+.side-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.side-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 14px;
+}
+.side-head h3 {
+  font-size: var(--text-sm); font-weight: 700;
+  margin: 0; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--color-ink);
+}
+.side-count {
+  margin-left: auto; font-size: var(--text-xs);
+  color: var(--color-muted); font-family: var(--font-mono);
+}
+.tag-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.tag-row {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 7px 10px; border-radius: 8px;
+  border: 1px solid transparent; background: none;
+  cursor: pointer; font-size: var(--text-sm);
+  color: var(--color-ink-soft); font-family: var(--font-body);
+  text-align: left;
+}
+.tag-row:hover { background: var(--color-surface-alt); color: var(--color-ink); }
+.tag-dot { width: 8px; height: 8px; border-radius: 50%; }
+.t-name { flex: 1; }
+.t-count { font-family: var(--font-mono); font-size: 11px; color: var(--color-muted); }
+.about-txt { font-size: 13.5px; color: var(--color-ink-soft); line-height: 1.6; margin: 0; }
+.about-stats {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px 14px; margin-top: 14px;
+  border-top: 1px dashed var(--color-line);
+  padding-top: 13px;
+}
+.about-stats dt {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.14em; color: var(--color-muted);
+  text-transform: uppercase; margin: 0;
+}
+.about-stats dd {
+  font-family: var(--font-mono); font-size: 14px;
+  font-weight: 600; color: var(--color-ink); margin: 0;
+}
+
+/* Tag hues */
+.hue-blue .tag-dot { background: var(--color-blue); }
+.hue-teal .tag-dot { background: var(--color-teal); }
+.hue-amber .tag-dot { background: var(--color-amber); }
+.hue-violet .tag-dot { background: var(--color-violet); }
+.hue-green .tag-dot { background: var(--color-green); }
+.hue-coral .tag-dot { background: var(--color-coral); }
+
+/* Preview badge */
+.preview-badge {
+  position: fixed; top: 16px; right: 16px;
+  background: var(--color-blue); color: white;
+  padding: 8px 16px; border-radius: 999px;
+  font-size: 12px; font-weight: 700;
+  font-family: var(--font-heading);
+  z-index: 100; box-shadow: var(--shadow-lg);
+  letter-spacing: 0.05em;
+}
+</style>
+</head>
+<body>
+
+<div class="preview-badge">🎨 DESIGN PREVIEW</div>
+
+<header class="site-header">
+  <div class="header-wrap">
+    <a href="/" class="logo" style="text-decoration:none">
+      <div class="logo-mark">U</div>
+      <span class="logo-text">URE Marília</span>
+    </a>
+    <nav class="header-nav">
+      <a href="#">Notícias</a>
+      <a href="#">Formações</a>
+      <a href="#">Materiais</a>
+      <a href="#">Admin</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <div class="content-grid">
+    <div class="main-col">
+      <div class="toolbar">
+        <div class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" placeholder="Buscar publicações…">
+        </div>
+        <select class="select">
+          <option>Mais recentes</option>
+          <option>Mais antigas</option>
+          <option>Título A–Z</option>
+        </select>
+      </div>
+
+      <div class="posts">
+
+        <article class="post-card">
+          <div class="post-body">
+            <h2 class="post-title"><a href="#">Avaliação formativa na prática</a></h2>
+            <div class="post-meta">
+              <time datetime="2026-11-19">19/11/2026</time>
+              <span class="sep">·</span>
+              <span>5 min</span>
+              <span class="sep">·</span>
+              <span class="post-cat" style="color:var(--color-teal)">Formação</span>
+            </div>
+            <div class="post-tags">
+              <span class="chip hue-blue"><span class="tag-dot"></span>avaliação</span>
+              <span class="chip hue-teal"><span class="tag-dot"></span>formação</span>
+              <span class="chip hue-amber"><span class="tag-dot"></span>professores</span>
+            </div>
+            <p class="post-excerpt">Como implementar avaliação formativa contínua em sala de aula, com exemplos práticos e reflexões sobre o processo de aprendizagem dos estudantes.</p>
+            <div class="post-foot">
+              <a class="read-link" href="#">Ler publicação →</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card">
+          <div class="post-body">
+            <h2 class="post-title"><a href="#">Acolhimento no início do ano letivo</a></h2>
+            <div class="post-meta">
+              <time datetime="2026-11-15">15/11/2026</time>
+              <span class="sep">·</span>
+              <span>4 min</span>
+              <span class="sep">·</span>
+              <span class="post-cat" style="color:var(--color-blue)">Notícia</span>
+            </div>
+            <div class="post-tags">
+              <span class="chip hue-violet"><span class="tag-dot"></span>acolhimento</span>
+              <span class="chip hue-green"><span class="tag-dot"></span>estudantes</span>
+            </div>
+            <p class="post-excerpt">Estratégias de acolhimento para receber os estudantes no início do ano letivo, criando vínculos e um ambiente de aprendizagem positivo desde o primeiro dia.</p>
+            <div class="post-foot">
+              <a class="read-link" href="#">Ler publicação →</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card">
+          <div class="post-body">
+            <h2 class="post-title"><a href="#">Clube de Leitura nas escolas</a></h2>
+            <div class="post-meta">
+              <time datetime="2026-11-10">10/11/2026</time>
+              <span class="sep">·</span>
+              <span>6 min</span>
+              <span class="sep">·</span>
+              <span class="post-cat" style="color:var(--color-green)">Projeto</span>
+            </div>
+            <div class="post-tags">
+              <span class="chip hue-amber"><span class="tag-dot"></span>leitura</span>
+              <span class="chip hue-blue"><span class="tag-dot"></span>projeto</span>
+              <span class="chip hue-teal"><span class="tag-dot"></span>escolas</span>
+            </div>
+            <p class="post-excerpt">O Clube de Leitura da URE Marília está circulando por escolas da rede estadual. O projeto leva encontros semanais de leitura para estudantes, com mediação de professores voluntários.</p>
+            <div class="post-foot">
+              <a class="read-link" href="#">Ler publicação →</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card">
+          <div class="post-body">
+            <h2 class="post-title"><a href="#">Mostra de Projetos de Vida</a></h2>
+            <div class="post-meta">
+              <time datetime="2026-11-05">05/11/2026</time>
+              <span class="sep">·</span>
+              <span>3 min</span>
+              <span class="sep">·</span>
+              <span class="post-cat" style="color:var(--color-coral)">Comunicado</span>
+            </div>
+            <div class="post-tags">
+              <span class="chip hue-coral"><span class="tag-dot"></span>projetos-de-vida</span>
+              <span class="chip hue-green"><span class="tag-dot"></span>estudantes</span>
+            </div>
+            <p class="post-excerpt">Estudantes apresentam projetos de autonomia e protagonismo desenvolvidos ao longo do ano letivo na Mostra de Projetos de Vida.</p>
+            <div class="post-foot">
+              <a class="read-link" href="#">Ler publicação →</a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <section class="side-card">
+        <div class="side-head">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <h3>Tags</h3>
+          <span class="side-count">8</span>
+        </div>
+        <ul class="tag-list">
+          <li class="hue-blue"><button class="tag-row"><span class="tag-dot"></span><span class="t-name">avaliação</span><span class="t-count">3</span></button></li>
+          <li class="hue-teal"><button class="tag-row"><span class="tag-dot"></span><span class="t-name">formação</span><span class="t-count">5</span></button></li>
+          <li class="hue-amber"><button class="tag-row"><span class="tag-dot"></span><span class="t-name">leitura</span><span class="t-count">4</span></button></li>
+          <li class="hue-violet"><button class="tag-row"><span class="tag-dot"></span><span class="t-name">acolhimento</span><span class="t-count">2</span></button></li>
+          <li class="hue-green"><button class="tag-row"><span class="tag-dot"></span><span class="t-name">estudantes</span><span class="t-count">7</span></button></li>
+          <li class="hue-blue"><button class="tag-row"><span class="tag-dot"></span><span class="t-name">professores</span><span class="t-count">6</span></button></li>
+          <li class="hue-teal"><button class="tag-row"><span class="tag-dot"></span><span class="t-name">escolas</span><span class="t-count">4</span></button></li>
+          <li class="hue-coral"><button class="tag-row"><span class="tag-dot"></span><span class="t-name">projetos</span><span class="t-count">3</span></button></li>
+        </ul>
+      </section>
+
+      <section class="side-card">
+        <div class="side-head">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <h3>Sobre a URE</h3>
+        </div>
+        <p class="about-txt">Blog institucional da Unidade Regional de Ensino de Marília, Secretaria da Educação do Estado de São Paulo.</p>
+        <dl class="about-stats">
+          <div><dt>Publicações</dt><dd>8</dd></div>
+          <div><dt>Tags ativas</dt><dd>8</dd></div>
+          <div><dt>Última</dt><dd>19/11/2026</dd></div>
+          <div><dt>Ano</dt><dd>2026</dd></div>
+        </dl>
+      </section>
+    </aside>
+  </div>
+</div>
+
+</body>
+</html>
