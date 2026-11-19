@@ -24,7 +24,7 @@ h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 10px}h3{font-size:14px;m
 .grid{display:grid;grid-template-columns:320px 1fr;gap:16px}@media(max-width:950px){.grid{grid-template-columns:1fr}}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.grid-2{grid-template-columns:1fr}}
 .field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
-.field input[type=text],.field input[type=email],.field input[type=password],.field input[type=date],.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.field input[type=text],.field input[type=email],.field input[type=password],.field input[type=date],.field input[type=color],.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
 .field textarea{min-height:200px;font-family:var(--mono);font-size:13px;resize:vertical}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:700px){.row{grid-template-columns:1fr}}
 .list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;max-height:65vh;overflow:auto}
@@ -73,6 +73,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   <div id="appView" class="hidden">
     <div class="tabs">
       <button class="tab active" data-tab="posts">Postagens</button>
+      <button class="tab" data-tab="tags">Tags</button>
       <button class="tab" data-tab="users">Usuários</button>
     </div>
 
@@ -125,6 +126,43 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
             <div class="error" id="postError"></div>
           </form>
         </main>
+      </div>
+    </section>
+
+    <section id="tab-tags" class="hidden">
+      <div class="grid-2">
+        <div class="card">
+          <h2>Tags existentes</h2>
+          <p class="muted">Gerencie as tags utilizadas nas postagens do blog.</p>
+          <div class="search"><input type="text" id="tagSearch" placeholder="Buscar tag..."></div>
+          <ul class="list" id="tagList"></ul>
+        </div>
+        <div class="card">
+          <h2 id="tagFormTitle">Nova tag</h2>
+          <div class="field"><label for="tagName">Nome da tag</label><input type="text" id="tagName" placeholder="ex: Formação de Professores"></div>
+          <div class="field"><label for="tagSlug">Slug</label><input type="text" id="tagSlug" placeholder="gerado automaticamente" class="muted"></div>
+          <div class="field"><label for="tagCor">Cor</label><input type="text" id="tagCor" value="#2563EB" style="width:120px"></div>
+          <div class="notice">A cor é usada na nuvem de tags e nos filtros do site.</div>
+          <div class="bar">
+            <button class="btn btn-primary" id="btnSaveTag">Salvar tag</button>
+            <button class="btn btn-danger" id="btnDeleteTag">Excluir</button>
+            <button class="btn" id="btnNewTag">Nova tag</button>
+          </div>
+          <div class="error" id="tagError"></div>
+          <hr style="margin:20px 0;border:none;border-top:1px solid var(--line)">
+          <h3>Operações em lote</h3>
+          <p class="muted">Renomear ou mesclar tags em todas as postagens.</p>
+          <div class="row">
+            <div class="field"><label for="mergeFrom">Tag origem</label>
+              <select id="mergeFrom"></select>
+            </div>
+            <div class="field"><label for="mergeTo">Renomear para</label><input type="text" id="mergeTo" placeholder="novo nome"></div>
+          </div>
+          <div class="bar">
+            <button class="btn btn-primary btn-sm" id="btnRenameTag">Renomear em todos os posts</button>
+          </div>
+          <div class="error" id="mergeError"></div>
+        </div>
       </div>
     </section>
 
@@ -185,6 +223,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     $("userLabel").textContent = userEmail() || "URE Marília";
     clearPost();
     refreshPosts();
+    refreshTags();
     refreshUsers();
   }
 
@@ -299,6 +338,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
       await refreshPosts();
       selectPost(d.id);
       toast("Postagem salva com sucesso! O site será atualizado em ~1 min.");
+      await refreshTags();
     }catch(err){
       $("postError").textContent="Erro: "+err.message;
       toast("Erro: "+err.message);
@@ -312,7 +352,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     try{
       var r=await sb.schema("blog").from("posts").delete().eq("id",currentPostId);
       if(r.error){ toast("Erro: "+r.error.message); return; }
-      await refreshPosts(); clearPost(); toast("Postagem excluída.");
+      await refreshPosts(); clearPost(); refreshTags(); toast("Postagem excluída.");
     }catch(err){ toast("Erro: "+err.message); }
   };
   $("btnDuplicatePost").onclick=async function(){
@@ -328,6 +368,202 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   $("btnExport").onclick=function(){ var blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),posts:posts},null,2)],{type:"application/json"}); var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="blog-ure-posts.json"; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},1000); toast("JSON exportado."); };
   $("btnImport").onclick=function(){ $("fileInput").click(); };
   $("fileInput").onchange=function(e){ var f=e.target.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(){ try{ var d=JSON.parse(r.result); var arr=Array.isArray(d)?d:(d.posts||[]); if(!arr.length){toast("Nenhuma publicação.");return;} posts=arr.map(function(p){p.id=p.id||uidUUID(); p.tags=p.tags||[]; return p;}); renderPosts(); toast("Importado. Salve cada postagem para gravar no banco."); }catch(err){ toast("Arquivo inválido."); } }; r.readAsText(f); e.target.value=""; };
+
+  // ========================================
+  // Gerenciamento de Tags (escopo admin)
+  // ========================================
+  var tags = []; // {slug, name, cor, count}
+  var currentTagSlug = null;
+
+  function collectTags(){
+    var map = {};
+    posts.forEach(function(p){
+      (p.tags||[]).forEach(function(t){
+        var s = slugify(t) || t.trim();
+        if(!s) return;
+        if(!map[s]) map[s] = {slug: s, name: t.trim(), cor: "#2563EB", count: 0};
+        map[s].count++;
+      });
+    });
+    return Object.values(map).sort(function(a,b){ return b.count - a.count || a.name.localeCompare(b.name); });
+  }
+
+  async function refreshTags(){
+    tags = collectTags();
+    // Tenta carregar cores personalizadas da tabela categories (se existir como tags)
+    try{
+      var r = await sb.schema("blog").from("categories").select("slug,cor");
+      if(!r.error && r.data){
+        var corMap = {};
+        r.data.forEach(function(c){ corMap[c.slug] = c.cor; });
+        tags.forEach(function(t){ if(corMap[t.slug]) t.cor = corMap[t.slug]; });
+      }
+    }catch(e){/* categorias podem não existir ainda */}
+    renderTags();
+  }
+
+  function renderTags(){
+    var q = ($("tagSearch").value||"").toLowerCase();
+    var list = $("tagList"); list.innerHTML = "";
+    var filtered = tags.filter(function(t){
+      if(!q) return true;
+      return t.name.toLowerCase().indexOf(q)!==-1 || t.slug.toLowerCase().indexOf(q)!==-1;
+    });
+    if(!filtered.length){ list.innerHTML='<li class="muted">Nenhuma tag encontrada.</li>'; }
+    filtered.forEach(function(t){
+      var li=document.createElement("li"); li.className="item"+(t.slug===currentTagSlug?" active":"");
+      li.innerHTML='<div style="display:flex;align-items:center;gap:8px">'+
+        '<span style="width:12px;height:12px;border-radius:50%;background:'+esc(t.cor)+';flex-shrink:0"></span>'+
+        '<div style="flex:1"><div class="item-title">'+esc(t.name)+'</div>'+
+        '<div class="item-meta">'+esc(t.slug)+' · '+t.count+' post'+(t.count!==1?'s':'')+'</div></div></div>';
+      li.onclick=function(){ selectTag(t.slug); };
+      list.appendChild(li);
+    });
+    // Atualiza também o select de merge
+    var sel = $("mergeFrom"); if(sel){
+      sel.innerHTML = '<option value="">-- selecione --</option>';
+      tags.forEach(function(t){
+        var opt = document.createElement("option");
+        opt.value = t.slug; opt.textContent = t.name + ' ('+t.count+')';
+        sel.appendChild(opt);
+      });
+    }
+  }
+
+  function selectTag(slug){
+    var t = tags.find(function(x){return x.slug===slug;});
+    if(!t) return;
+    currentTagSlug = slug;
+    $("tagName").value = t.name;
+    $("tagSlug").value = t.slug;
+    $("tagCor").value = t.cor || "#2563EB";
+    $("tagFormTitle").textContent = "Editar tag: " + t.name;
+    $("tagError").textContent = "";
+    renderTags();
+  }
+
+  function clearTag(){
+    currentTagSlug = null;
+    $("tagName").value = "";
+    $("tagSlug").value = "";
+    $("tagCor").value = "#2563EB";
+    $("tagFormTitle").textContent = "Nova tag";
+    $("tagError").textContent = "";
+    renderTags();
+  }
+
+  $("tagSearch").oninput = renderTags;
+  $("btnNewTag").onclick = clearTag;
+
+  // Auto-gera slug a partir do nome
+  $("tagName").addEventListener("input", function(){
+    $("tagSlug").value = slugify(this.value);
+  });
+
+  $("btnSaveTag").onclick = async function(){
+    $("tagError").textContent = "";
+    var name = $("tagName").value.trim();
+    var slug = slugify(name);
+    var cor = $("tagCor").value || "#2563EB";
+    if(!name){ $("tagError").textContent = "Informe um nome para a tag."; return; }
+
+    // Salva cor na tabela categories (se disponível)
+    try{
+      await sb.schema("blog").from("categories").upsert({
+        nome: name,
+        slug: slug,
+        cor: cor
+      }, {onConflict: "slug"});
+    }catch(e){/* ok se categories não existir */}
+
+    // Se renomeando uma tag existente, atualiza todos os posts
+    if(currentTagSlug && currentTagSlug !== slug){
+      await renameTagInPosts(currentTagSlug, name, slug);
+    }
+
+    await refreshPosts();
+    await refreshTags();
+    clearTag();
+    toast("Tag salva com sucesso!");
+  };
+
+  $("btnDeleteTag").onclick = async function(){
+    if(!currentTagSlug){ toast("Selecione uma tag para excluir."); return; }
+    var t = tags.find(function(x){return x.slug===currentTagSlug;});
+    if(!t){ return; }
+    if(!confirm("Remover a tag \""+t.name+"\" de todos os "+t.count+" post(s)?")) return;
+    $("tagError").textContent = "";
+    try{
+      await removeTagFromPosts(currentTagSlug);
+      // Remove da tabela categories também
+      try{
+        await sb.schema("blog").from("categories").delete().eq("slug", currentTagSlug);
+      }catch(e){}
+      await refreshPosts();
+      await refreshTags();
+      clearTag();
+      toast("Tag excluída.");
+    }catch(err){
+      $("tagError").textContent = "Erro: "+err.message;
+      toast("Erro: "+err.message);
+    }
+  };
+
+  async function renameTagInPosts(oldSlug, newName, newSlug){
+    // Busca posts que contêm a tag antiga
+    var r = await sb.schema("blog").from("posts").select("id,tags").contains("tags", [oldSlug]);
+    if(r.error) throw r.error;
+    var toUpdate = (r.data||[]).filter(function(p){
+      return (p.tags||[]).some(function(t){ return t===oldSlug || slugify(t)===oldSlug; });
+    });
+    for(var i=0; i<toUpdate.length; i++){
+      var p = toUpdate[i];
+      var newTags = (p.tags||[]).map(function(t){
+        var s = slugify(t)||t.trim();
+        if(s===oldSlug) return newSlug;
+        return t;
+      });
+      // Remove duplicatas
+      newTags = newTags.filter(function(v,idx,arr){return arr.indexOf(v)===idx;});
+      await sb.schema("blog").from("posts").update({tags: newTags}).eq("id", p.id);
+    }
+  }
+
+  async function removeTagFromPosts(slug){
+    var r = await sb.schema("blog").from("posts").select("id,tags").contains("tags", [slug]);
+    if(r.error) throw r.error;
+    var toUpdate = (r.data||[]).filter(function(p){
+      return (p.tags||[]).some(function(t){ return (slugify(t)||t.trim())===slug; });
+    });
+    for(var i=0; i<toUpdate.length; i++){
+      var p = toUpdate[i];
+      var newTags = (p.tags||[]).filter(function(t){
+        return (slugify(t)||t.trim()) !== slug;
+      });
+      await sb.schema("blog").from("posts").update({tags: newTags}).eq("id", p.id);
+    }
+  }
+
+  $("btnRenameTag").onclick = async function(){
+    $("mergeError").textContent = "";
+    var fromSlug = $("mergeFrom").value;
+    var toName = $("mergeTo").value.trim();
+    var toSlug = slugify(toName);
+    if(!fromSlug){ $("mergeError").textContent = "Selecione a tag de origem."; return; }
+    if(!toSlug){ $("mergeError").textContent = "Informe o novo nome."; return; }
+    if(!confirm("Renomear \""+fromSlug+"\" para \""+toSlug+"\" em todos os posts?")) return;
+    try{
+      await renameTagInPosts(fromSlug, toName, toSlug);
+      await refreshPosts();
+      await refreshTags();
+      $("mergeTo").value = "";
+      $("mergeFrom").value = "";
+      toast("Tag renomeada em todos os posts!");
+    }catch(err){
+      $("mergeError").textContent = "Erro: "+err.message;
+      toast("Erro: "+err.message);
+    }
+  };
 
   async function refreshUsers(){
     try{
@@ -408,7 +644,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
       document.querySelectorAll(".tab").forEach(function(b){b.classList.remove("active");});
       btn.classList.add("active");
       var t=btn.getAttribute("data-tab");
-      ["posts","users"].forEach(function(x){ $("tab-"+x).classList.toggle("hidden",x!==t); });
+      ["posts","tags","users"].forEach(function(x){ $("tab-"+x).classList.toggle("hidden",x!==t); });
     };
   });
 
