@@ -400,10 +400,13 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   $("fileInput").onchange=function(e){ var f=e.target.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(){ try{ var d=JSON.parse(r.result); var arr=Array.isArray(d)?d:(d.posts||[]); if(!arr.length){toast("Nenhuma publicação.");return;} posts=arr.map(function(p){p.id=p.id||uidUUID(); p.tags=p.tags||[]; return p;}); renderPosts(); toast("Importado. Salve cada postagem para gravar no banco."); }catch(err){ toast("Arquivo inválido."); } }; r.readAsText(f); e.target.value=""; };
 
   // ========================================
-  // Anexos (Google Drive)
+  // Anexos (Google Drive via Apps Script)
   // ========================================
   var anexos = []; // Array de {id, nome, tamanho, tipo, url, driveId}
-  var EDGE_FUNCTION_URL = "/functions/v1/upload-anexo";
+  
+  // ⚠️ COLE AQUI A URL DO GOOGLE APPS SCRIPT DEPLOYADO
+  // Exemplo: "https://script.google.com/macros/s/AKfycbz..."
+  var APPS_SCRIPT_URL = ""; 
 
   function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + " B";
@@ -453,36 +456,50 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     });
   }
 
+  // Converte File para base64
+  function fileToBase64(file) {
+    return new Promise(function(resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function() {
+        // Remove o prefixo "data:..." do resultado
+        var base64 = reader.result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
   async function uploadAnexo(file) {
+    if (!APPS_SCRIPT_URL) {
+      toast("⚠️ URL do Apps Script não configurada. Peça ao administrador.");
+      throw new Error("URL do Apps Script não configurada");
+    }
+
     $("anexoProgress").classList.remove("hidden");
-    $("anexoProgressBar").style.width = "0%";
-    $("anexoProgressText").textContent = "Enviando " + file.name + "...";
+    $("anexoProgressBar").style.width = "20%";
+    $("anexoProgressText").textContent = "Preparando " + file.name + "...";
 
     try {
-      var formData = new FormData();
-      formData.append("file", file);
-
-      // Obtém token de sessão
-      var sessionData = await sb.auth.getSession();
-      var token = sessionData.data.session ? sessionData.data.session.access_token : null;
+      // Converte arquivo para base64
+      $("anexoProgressBar").style.width = "40%";
+      var base64 = await fileToBase64(file);
       
-      if (!token) {
-        throw new Error("Sessão expirada. Faça login novamente.");
-      }
+      $("anexoProgressBar").style.width = "60%";
+      $("anexoProgressText").textContent = "Enviando " + file.name + "...";
 
-      // Monta URL completa da Edge Function
-      var supabaseUrl = SUPABASE_URL.replace(".supabase.co", "");
-      var functionUrl = supabaseUrl + ".supabase.co" + EDGE_FUNCTION_URL;
-
-      var response = await fetch(functionUrl, {
+      // Envia para o Google Apps Script
+      var response = await fetch(APPS_SCRIPT_URL, {
         method: "POST",
-        headers: {
-          "Authorization": "Bearer " + token
-        },
-        body: formData
+        body: JSON.stringify({
+          file: base64,
+          fileName: file.name,
+          fileType: file.type,
+          fileSize: file.size
+        })
       });
 
-      $("anexoProgressBar").style.width = "70%";
+      $("anexoProgressBar").style.width = "90%";
 
       var result = await response.json();
 
@@ -511,6 +528,10 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   }
 
   $("btnAddAnexo").onclick = function() {
+    if (!APPS_SCRIPT_URL) {
+      alert("⚠️ URL do Google Apps Script não configurada.\n\nPeça ao administrador para configurar em src/admin/index.njk\n(variável APPS_SCRIPT_URL)");
+      return;
+    }
     $("anexoInput").click();
   };
 

@@ -76,13 +76,38 @@ npm run export:content
 3. Output directory: `_site`
 4. Domínio: configure em Project Settings → Domains.
 
-## Supabase (Fase 2 — pendente)
+## Supabase (Fase 2)
 
-O schema SQL está em `supabase/migrations/`. Ainda não foi aplicado a nenhum projeto. Quando o projeto Supabase estiver disponível:
+O schema SQL está em `supabase/migrations/`. Inclui:
 
-1. Crie o banco e aplique as migrações.
-2. Configure `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY` nas env vars da Vercel.
-3. Implemente o painel `/admin` e o webhook de rebuild.
+- Tabelas: `posts`, `profiles`, `categories`, `pages`, `settings`
+- Row Level Security (RLS) para segurança
+- Autenticação e permissões por papel (admin, editor, author)
+- Coluna `anexos` (JSONB) para arquivos anexados
+
+### Painel Admin
+
+Acesse `/admin/index.html` para gerenciar:
+
+- **Postagens**: criar, editar, excluir, duplicar
+- **Tags**: gerenciar tags e renomear em lote
+- **Usuários**: cadastrar admins, editores e autores
+- **Anexos**: upload de arquivos para Google Drive (via Apps Script)
+
+### Anexos (Google Drive via Apps Script)
+
+O sistema de anexos usa **Google Apps Script** (gratuito, sem cartão de crédito):
+
+1. Crie uma pasta no Google Drive
+2. Configure o Apps Script (código em `scripts/google-apps-script.js`)
+3. Faça deploy como Web App
+4. Cole a URL em `src/admin/index.njk` (variável `APPS_SCRIPT_URL`)
+
+**Guia completo:** [`docs/APPS_SCRIPT_SETUP.md`](docs/APPS_SCRIPT_SETUP.md)
+
+Os arquivos ficam públicos automaticamente e são armazenados no Google Drive (15 GB grátis).
+
+---
 
 ## Licença
 
