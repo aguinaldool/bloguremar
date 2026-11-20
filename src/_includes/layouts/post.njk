@@ -6,6 +6,11 @@ layout: layouts/base.njk
 {% set bodyClass = "post" %}
 
 <article class="article">
+  {% if capa_url %}
+  <figure class="article-figure">
+    <img src="{{ capa_url }}" alt="{{ capa_alt or title }}">
+  </figure>
+  {% endif %}
   <header class="article-header">
     <div class="article-meta">
       <svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg>
