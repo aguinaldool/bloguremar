@@ -110,6 +110,8 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
             <input type="hidden" id="postSlug">
             <div class="field"><label for="title">Título</label><input type="text" id="title" required></div>
             <div class="field"><label for="resumo">Resumo</label><input type="text" id="resumo"></div>
+            <div class="field"><label for="capa_url">Imagem da publicação (URL, opcional)</label><input type="text" id="capa_url" placeholder="https://exemplo.com/imagem.jpg"></div>
+            <div class="field"><label for="capa_alt">Texto alternativo da imagem (opcional)</label><input type="text" id="capa_alt" placeholder="Descrição para leitores de tela"></div>
             <div class="row">
               <div class="field"><label for="categoria">Categoria</label>
                 <select id="categoria"><option value="noticia">Notícia</option><option value="comunicado">Comunicado</option><option value="formacao">Formação</option><option value="material">Material</option><option value="projeto">Projeto</option><option value="evento">Evento</option></select>
@@ -266,6 +268,8 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
       id: p.id,
       titulo: p.title||"",
       resumo: p.resumo||"",
+      capa_url: p.capaUrl||"",
+      capa_alt: p.capaAlt||"",
       categoria: p.categoria||"noticia",
       tipo: p.categoria||"noticia",
       tags: p.tags||[],
@@ -281,7 +285,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
   }
   function payloadToPost(r){
     return {
-      id: r.id, title: r.titulo, resumo: r.resumo, categoria: r.categoria||r.tipo,
+      id: r.id, title: r.titulo, resumo: r.resumo, capaUrl: r.capa_url||"", capaAlt: r.capa_alt||"", categoria: r.categoria||r.tipo,
       tags: r.tags||[], anexos: r.anexos||[], destaque: !!r.destaque, data: (r.publicado_em||"").slice(0,10),
       autor: r.autor||"", status: r.status||"draft", conteudo: r.conteudo||"", slug: r.slug||""
     };
@@ -318,7 +322,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
     var p=posts.find(function(x){return x.id===id;}); if(!p) return; currentPostId=id;
     $("postError").textContent="";
     $("postId").value=p.id; $("postSlug").value=p.slug||""; $("title").value=p.title||""; $("resumo").value=p.resumo||""; $("categoria").value=p.categoria||"noticia";
-    $("data").value=p.data||""; $("autor").value=p.autor||"Equipe URE Marília"; $("status").value=p.status||"published";
+    $("data").value=p.data||""; $("capa_url").value=p.capaUrl||""; $("capa_alt").value=p.capaAlt||""; $("autor").value=p.autor||"Equipe URE Marília"; $("status").value=p.status||"published";
     $("tags").value=(p.tags||[]).join(", "); $("destaque").checked=!!p.destaque; $("conteudo").value=p.conteudo||"";
     anexos = (p.anexos||[]).slice(); renderAnexos();
     $("postFormTitle").textContent="Editar postagem"; renderPosts();
@@ -350,6 +354,8 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
       id: id,
       title: title,
       resumo: $("resumo").value.trim(),
+      capaUrl: $("capa_url").value.trim(),
+      capaAlt: $("capa_alt").value.trim(),
       categoria: $("categoria").value,
       data: $("data").value,
       autor: $("autor").value.trim() || "Equipe URE Marília",
