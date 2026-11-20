@@ -50,6 +50,8 @@ function render(p) {
     "---",
     "title: " + q(p.titulo),
     "resumo: " + q(p.resumo || ""),
+    "capa_url: " + q(p.capa_url || ""),
+    "capa_alt: " + q(p.capa_alt || ""),
     "categoria: " + q(categoria),
     "tipo: " + q(tipo),
     "tags: [" + tags.map(q).join(", ") + "]",
