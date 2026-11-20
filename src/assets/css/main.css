@@ -452,6 +452,17 @@
   overflow: hidden;
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s, border-color 0.25s;
 }
+
+.post-card-figure {
+  margin: 0;
+}
+
+.post-card-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-xl);
+}
 .post-card:hover {
   transform: translateY(-3px);
   border-color: #C2A86E;
