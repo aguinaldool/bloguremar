@@ -18,6 +18,9 @@ permalink: /noticias/
     <div class="grid grid-3">
       {% for post in collections.posts %}
       <article class="card">
+        {% if post.data.capa_url %}
+        <figure class="card-figure"><img src="{{ post.data.capa_url }}" alt="{{ post.data.title }}"></figure>
+        {% endif %}
         <div class="card-body">
           <div class="card-meta">
             <span>{{ post.date | dateBR }}</span>
