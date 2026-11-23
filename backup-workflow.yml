@@ -1,0 +1,52 @@
+name: Snapshot Supabase → repo privado
+
+on:
+  schedule:
+    # Todo dia às 03:00 UTC
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do blog
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Gerar snapshot
+        env:
+          SUPABASE_PAT: ${{ secrets.SUPABASE_PAT }}
+          SUPABASE_PROJECT_REF: lymrixekprobknxvoomk
+        run: node scripts/backup-supabase.js
+
+      - name: Publicar no repositório privado de backups
+        env:
+          TOKEN: ${{ secrets.BACKUP_REPO_TOKEN }}
+        run: |
+          set -e
+          SNAP=$(ls -1d backups/20*/ 2>/dev/null | sort | tail -1)
+          echo "Snapshot: $SNAP"
+          git clone --quiet "https://x-access-token:${TOKEN}@github.com/aguinaldool/bloguremar-backups.git" /tmp/backup-repo
+          mkdir -p /tmp/backup-repo/snapshots
+          cp -r "$SNAP" "/tmp/backup-repo/snapshots/$(basename "$SNAP")"
+
+          # Retenção de 30 dias (baseada no nome YYYYMMDD-HHmm)
+          CUTOFF=$(date -u -d '30 days ago' +%Y%m%d%H%M)
+          for d in /tmp/backup-repo/snapshots/20*; do
+            [ -d "$d" ] || continue
+            n=$(basename "$d")
+            if [ "$n" -lt "$CUTOFF" ]; then echo "Removendo antigo: $n"; rm -rf "$d"; fi
+          done
+
+          cd /tmp/backup-repo
+          git config user.name "blog-backup"
+          git config user.email "backup@local"
+          git add -A
+          git diff --cached --quiet || git commit -m "snapshot $(basename "$SNAP")"
+          git push --quiet
+          echo "✅ Backup publicado com sucesso"
