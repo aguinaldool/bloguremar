@@ -469,6 +469,11 @@
   object-fit: contain;
   object-position: center;
 }
+/* Filtro por tag: esconde os posts que não correspondem */
+.post-card.is-hidden {
+  display: none;
+}
+
 .post-card:hover {
   transform: translateY(-3px);
   border-color: #C2A86E;
