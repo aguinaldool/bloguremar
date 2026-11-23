@@ -431,14 +431,14 @@ li {
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: var(--radius-lg);
-  background: var(--color-line);
+  background: var(--cover-bg);
 }
 
 .card-figure img {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   border: 1px solid var(--color-line);
 }
@@ -656,14 +656,14 @@ li {
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: var(--radius);
-  background: var(--color-line);
+  background: var(--cover-bg);
 }
 
 .article-figure img {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   border: 1px solid var(--color-line);
 }
