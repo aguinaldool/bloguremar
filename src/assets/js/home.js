@@ -7,6 +7,7 @@
 
   var grid = document.getElementById("postsList");
   if (!grid) return;
+  var L = window.URE_LIVE || null;
 
   var cards = Array.prototype.slice.call(grid.querySelectorAll(".post-card"));
   var countInfo = document.getElementById("countInfo");
@@ -18,6 +19,7 @@
   var sortSel = document.getElementById("sortSel");
   var empty = document.getElementById("emptyState");
   var mobileTags = document.getElementById("mobileTags");
+  var tagList = document.getElementById("tagList");
 
   var activeTag = null;
   var query = "";
@@ -105,11 +107,14 @@
   }
 
   // Tags (barra lateral + chips dos cards + faixa mobile)
-  document.querySelectorAll("[data-tag]").forEach(function (btn) {
-    if (btn.dataset.bound) return;
-    btn.dataset.bound = "1";
-    btn.addEventListener("click", function () { setTag(btn.getAttribute("data-tag")); });
-  });
+  function bindTags() {
+    document.querySelectorAll("[data-tag]").forEach(function (btn) {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", function () { setTag(btn.getAttribute("data-tag")); });
+    });
+  }
+  bindTags();
 
   if (clearTagBtn) clearTagBtn.addEventListener("click", clearTag);
 
@@ -155,6 +160,106 @@
     cards.forEach(function (c) { io.observe(c); });
   } else {
     cards.forEach(function (c) { c.classList.add("in"); });
+  }
+
+  // ============================================================
+  // Publicação/exclusão em tempo real (sem esperar o rebuild)
+  // O HTML gerado pelo 11ty continua servindo como base e para SEO;
+  // aqui apenas substituímos os cards pelo estado atual do Supabase.
+  // ============================================================
+  function renderLivePosts(rows) {
+    if (!L || !Array.isArray(rows)) return;
+
+    var tagMap = {};
+    var html = "";
+
+    rows.forEach(function (p) {
+      var slug = p.slug || p.id || "";
+      var title = p.titulo || "(sem título)";
+      var resumo = p.resumo || "";
+      var cat = p.categoria || p.tipo || "noticia";
+      var tags = L.realTags(p);
+      var dateISO = L.dateISO(p.publicado_em || p.criado_em);
+      var dateBR = L.dateBR(dateISO);
+      var url = "/noticias/" + encodeURIComponent(slug) + "/";
+      var searchStr = (title + " " + resumo + " " + tags.join(" ")).toLowerCase();
+
+      tags.forEach(function (t) { tagMap[t] = (tagMap[t] || 0) + 1; });
+
+      var tagsHtml = "";
+      if (tags.length) {
+        tagsHtml = '<div class="post-tags">' + tags.map(function (t) {
+          return '<button class="chip hue-' + L.tagHue(t) + '" data-tag="' + L.esc(t) + '"><span class="dot"></span>' + L.esc(t) + "</button>";
+        }).join("") + "</div>";
+      }
+
+      html += '<article class="post-card reveal in" data-id="' + L.esc(slug) + '"'
+        + ' data-tags="' + L.esc(tags.join(",")) + '"'
+        + ' data-categoria="' + L.esc(cat) + '"'
+        + ' data-title="' + L.esc(title.toLowerCase()) + '"'
+        + ' data-search="' + L.esc(searchStr) + '"'
+        + ' data-date="' + L.esc(dateISO) + '"'
+        + ' data-url="' + L.esc(url) + '">'
+        + (p.capa_url
+            ? '<figure class="post-card-figure"><img src="' + L.esc(p.capa_url) + '" alt="' + L.esc(title) + '"></figure>'
+            : "")
+        + '<div class="post-body">'
+        + '<h2 class="post-title"><a href="' + L.esc(url) + '">' + L.esc(title) + "</a></h2>"
+        + '<div class="post-meta">'
+        + '<svg class="ic ic-sm" aria-hidden="true"><use href="#i-calendar"/></svg>'
+        + '<time datetime="' + L.esc(dateISO) + '">' + L.esc(dateBR) + "</time>"
+        + '<span class="sep">·</span>'
+        + '<svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>'
+        + "<span>" + L.readingTime(p.conteudo) + " min</span>"
+        + '<span class="sep">·</span>'
+        + '<span class="post-cat" style="color:' + L.sectionColor(cat) + '">' + L.esc(L.sectionLabel(cat)) + "</span>"
+        + "</div>"
+        + tagsHtml
+        + '<p class="post-excerpt">' + L.esc(resumo) + "</p>"
+        + '<div class="post-foot"><a class="read-link" href="' + L.esc(url) + '">Ler publicação <svg class="ic ic-sm" aria-hidden="true"><use href="#i-arr-r"/></svg></a></div>'
+        + "</div></article>";
+    });
+
+    grid.innerHTML = html;
+    cards = Array.prototype.slice.call(grid.querySelectorAll(".post-card"));
+
+    var cloud = Object.keys(tagMap).map(function (name) {
+      return { name: name, count: tagMap[name] };
+    }).sort(function (a, b) {
+      return b.count - a.count || a.name.localeCompare(b.name, "pt-BR");
+    });
+
+    var tagCount = document.getElementById("tagCount");
+    if (tagCount) tagCount.textContent = String(cloud.length);
+    if (tagList) {
+      tagList.innerHTML = cloud.map(function (t) {
+        return '<li class="tag-item hue-' + L.tagHue(t.name) + '">'
+          + '<button class="tag-row" data-tag="' + L.esc(t.name) + '">'
+          + '<span class="tag-dot"></span><span class="t-name">' + L.esc(t.name) + "</span>"
+          + '<span class="t-count">' + t.count + "</span></button></li>";
+      }).join("");
+    }
+    if (mobileTags) {
+      mobileTags.innerHTML = cloud.map(function (t) {
+        return '<button class="chip hue-' + L.tagHue(t.name) + '" data-tag="' + L.esc(t.name) + '"><span class="dot"></span>' + L.esc(t.name) + "</button>";
+      }).join("");
+    }
+
+    var stats = document.querySelectorAll("#sobre .about-stats dd");
+    if (stats.length >= 3) {
+      stats[0].textContent = String(rows.length);
+      stats[1].textContent = String(cloud.length);
+      stats[2].textContent = L.dateBR(rows[0] && (rows[0].publicado_em || rows[0].criado_em));
+    }
+
+    if (activeTag && !tagMap[activeTag]) activeTag = null;
+    bindTags();
+    syncTagUI();
+    apply();
+  }
+
+  if (L) {
+    L.fetchPosts().then(function (rows) { if (rows) renderLivePosts(rows); });
   }
 
   // Fundo de curvas de nível (port do tema Meridiano)

@@ -14,7 +14,7 @@ permalink: /materiais/
 </header>
 
 <section class="section">
-  <div class="container">
+  <div class="container" data-live-cat="material">
     {% if collections.materiais.length %}
     <div class="grid grid-3">
       {% for post in collections.materiais %}
@@ -32,3 +32,4 @@ permalink: /materiais/
     {% endif %}
   </div>
 </section>
+<script src="/assets/js/list-live.js" defer></script>

@@ -5,7 +5,7 @@ layout: layouts/base.njk
 {% set pageDesc = resumo %}
 {% set bodyClass = "post" %}
 
-<article class="article">
+<article class="article" data-live-slug="{{ page.fileSlug }}">
   {% if capa_url %}
   <figure class="article-figure">
     <img src="{{ capa_url }}" alt="{{ capa_alt or title }}">
@@ -59,3 +59,4 @@ layout: layouts/base.njk
 
   <p style="margin-top:2rem;"><a href="/" class="btn btn-outline btn-sm"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-arr-l"/></svg> Voltar para o início</a></p>
 </article>
+<script src="/assets/js/post-live.js" defer></script>
