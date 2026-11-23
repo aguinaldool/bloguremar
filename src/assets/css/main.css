@@ -612,7 +612,8 @@
 /* barra lateral */
 .sidebar {
   position: sticky;
-  top: calc(var(--header-h) + 18px);
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -667,7 +668,7 @@
   font-weight: 500;
   color: var(--color-ink-soft);
   border-radius: 9px;
-  padding: 7px 9px;
+  padding: 1px 9px;
   transition: 0.15s;
   border: 1px solid transparent;
   background: none;
@@ -729,7 +730,7 @@
 }
 @media (max-width: 920px) {
   .content-grid { grid-template-columns: 1fr; }
-  .sidebar { position: static; max-height: none; overflow: visible; }
+  .sidebar { position: static; top: auto; transform: none; max-height: none; overflow: visible; }
   .hero-route { display: none; }
 }
 @media (max-width: 640px) {
