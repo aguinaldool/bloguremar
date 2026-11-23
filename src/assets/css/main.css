@@ -624,6 +624,23 @@
 .sidebar::-webkit-scrollbar { width: 8px; }
 .sidebar::-webkit-scrollbar-thumb { background: var(--color-line); border: none; border-radius: 6px; }
 .sidebar::-webkit-scrollbar-thumb:hover { background: var(--amber); }
+
+/* Desktop: estende a sidebar até a borda direita da janela, mantendo
+   os posts dentro do container centralizado. */
+@media (min-width: 921px) {
+  .sidebar {
+    width: 320px;
+    margin-left: auto;
+    margin-right: calc(
+      -1 * (var(--container-padding)
+        + max(0px, (100vw - var(--container-max)) / 2 - 8px))
+    );
+  }
+}
+@media (min-width: 921px) and (max-width: 1080px) {
+  .sidebar { width: 290px; }
+}
+
 .side-card {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
