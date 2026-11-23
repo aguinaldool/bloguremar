@@ -456,9 +456,10 @@
 /* Capas com proporção fixa: qualquer imagem colada no admin ocupa
    exatamente o mesmo espaço, independente das dimensões originais. */
 .post-card-figure {
-  margin: 0;
+  margin: 12px 0 2px;
   aspect-ratio: 16 / 9;
   overflow: hidden;
+  border-radius: var(--radius);
   background: var(--cover-bg);
 }
 

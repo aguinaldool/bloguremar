@@ -200,11 +200,11 @@
         + ' data-search="' + L.esc(searchStr) + '"'
         + ' data-date="' + L.esc(dateISO) + '"'
         + ' data-url="' + L.esc(url) + '">'
+        + '<div class="post-body">'
+        + '<h2 class="post-title"><a href="' + L.esc(url) + '">' + L.esc(title) + "</a></h2>"
         + (p.capa_url
             ? '<figure class="post-card-figure"><img src="' + L.esc(p.capa_url) + '" alt="' + L.esc(title) + '"></figure>'
             : "")
-        + '<div class="post-body">'
-        + '<h2 class="post-title"><a href="' + L.esc(url) + '">' + L.esc(title) + "</a></h2>"
         + '<div class="post-meta">'
         + '<svg class="ic ic-sm" aria-hidden="true"><use href="#i-calendar"/></svg>'
         + '<time datetime="' + L.esc(dateISO) + '">' + L.esc(dateBR) + "</time>"

@@ -31,14 +31,14 @@
       var c = p.categoria || p.tipo || "noticia";
       var url = "/noticias/" + encodeURIComponent(p.slug || p.id) + "/";
       return '<article class="card">'
-        + (p.capa_url
-            ? '<figure class="card-figure"><img src="' + L.esc(p.capa_url) + '" alt="' + L.esc(title) + '"></figure>'
-            : "")
         + '<div class="card-body">'
         + '<div class="card-meta"><span>' + L.esc(L.dateBR(p.publicado_em || p.criado_em)) + "</span>"
         + "<span>·</span>"
         + '<span style="color:' + L.sectionColor(c) + '">' + L.esc(L.sectionLabel(c)) + "</span></div>"
         + '<h3 class="card-title"><a href="' + L.esc(url) + '">' + L.esc(title) + "</a></h3>"
+        + (p.capa_url
+            ? '<figure class="card-figure"><img src="' + L.esc(p.capa_url) + '" alt="' + L.esc(title) + '"></figure>'
+            : "")
         + '<p class="card-excerpt">' + L.esc(p.resumo || "") + "</p>"
         + "</div></article>";
     }).join("");

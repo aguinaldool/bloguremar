@@ -18,9 +18,6 @@ permalink: /noticias/
     <div class="grid grid-3">
       {% for post in collections.posts %}
       <article class="card">
-        {% if post.data.capa_url %}
-        <figure class="card-figure"><img src="{{ post.data.capa_url }}" alt="{{ post.data.title }}"></figure>
-        {% endif %}
         <div class="card-body">
           <div class="card-meta">
             <span>{{ post.date | dateBR }}</span>
@@ -28,6 +25,9 @@ permalink: /noticias/
             <span style="color:{{ post.data.categoria | sectionColor }}">{{ post.data.categoria | sectionLabel }}</span>
           </div>
           <h3 class="card-title"><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
+          {% if post.data.capa_url %}
+          <figure class="card-figure"><img src="{{ post.data.capa_url }}" alt="{{ post.data.title }}"></figure>
+          {% endif %}
           <p class="card-excerpt">{{ post.data.resumo }}</p>
         </div>
       </article>

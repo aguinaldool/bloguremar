@@ -427,7 +427,7 @@ li {
 }
 
 .card-figure {
-  margin: 0 0 var(--space-5);
+  margin: 10px 0 var(--space-5);
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: var(--radius-lg);
