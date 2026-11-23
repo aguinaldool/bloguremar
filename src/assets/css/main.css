@@ -629,11 +629,13 @@
    os posts dentro do container centralizado. */
 @media (min-width: 921px) {
   .sidebar {
+    --right-gap: clamp(28px, 3vw, 48px);
     width: 320px;
     margin-left: auto;
     margin-right: calc(
       -1 * (var(--container-padding)
-        + max(0px, (100vw - var(--container-max)) / 2 - 8px))
+        + max(0px, (100vw - var(--container-max)) / 2 - 8px)
+        - var(--right-gap))
     );
   }
 }
