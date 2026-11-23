@@ -453,15 +453,21 @@
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s, border-color 0.25s;
 }
 
+/* Capas com proporção fixa: qualquer imagem colada no admin ocupa
+   exatamente o mesmo espaço, independente das dimensões originais. */
 .post-card-figure {
   margin: 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--color-line);
 }
 
 .post-card-figure img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
-  border-radius: var(--radius-xl);
+  object-fit: cover;
+  object-position: center;
 }
 .post-card:hover {
   transform: translateY(-3px);
