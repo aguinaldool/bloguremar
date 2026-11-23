@@ -655,8 +655,13 @@
   gap: 3px;
   margin: 0;
   padding: 0;
+  max-height: 42vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
-.tag-item { display: flex; align-items: center; gap: 4px; }
+.tag-list::-webkit-scrollbar { width: 6px; }
+.tag-list::-webkit-scrollbar-thumb { background: var(--color-line); border-radius: 6px; }
+.tag-item { display: flex; align-items: center; gap: 4px; flex: none; }
 .tag-row {
   display: flex;
   align-items: center;
@@ -668,7 +673,8 @@
   font-weight: 500;
   color: var(--color-ink-soft);
   border-radius: 9px;
-  padding: 1px 9px;
+  padding: clamp(1px, 0.3vh, 4px) 9px;
+  min-height: 22px;
   transition: 0.15s;
   border: 1px solid transparent;
   background: none;
