@@ -187,14 +187,14 @@ module.exports = function (eleventyConfig) {
   // Filtro de seção → cor (cartográfica)
   eleventyConfig.addFilter("sectionColor", (type) => {
     const map = {
-      noticia: "#54B8FF",
-      comunicado: "#FF7A48",
-      formacao: "#3BD6B4",
-      evento: "#84DD84",
-      material: "#FFB454",
-      projeto: "#B79CFF",
+      noticia: "#2563EB",
+      comunicado: "#DC2626",
+      formacao: "#0D9488",
+      evento: "#16A34A",
+      material: "#D97706",
+      projeto: "#7C3AED",
     };
-    return map[type] || "#54B8FF";
+    return map[type] || "#2563EB";
   });
 
   // Capa cartográfica determinística para um post

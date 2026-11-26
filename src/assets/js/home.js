@@ -64,6 +64,13 @@
     });
     visible.forEach(function (c) { grid.appendChild(c); });
 
+    // O card em destaque (linha inteira) só existe na visão padrão: mais
+    // recentes primeiro, sem tag e sem busca. Ao filtrar por tag, apenas
+    // os posts da tag aparecem, todos em grade uniforme.
+    var useFeatured = !activeTag && !query && sort === "new";
+    cards.forEach(function (c) { c.classList.remove("is-featured"); });
+    if (useFeatured && visible.length > 1) visible[0].classList.add("is-featured");
+
     var n = visible.length;
     countInfo.textContent = n + (n === 1 ? " publicação" : " publicações");
     if (clearTagBtn) clearTagBtn.hidden = !activeTag;
@@ -90,6 +97,10 @@
     activeTag = activeTag === t ? null : t;
     syncTagUI();
     apply();
+    var list = document.getElementById("publicacoes");
+    if (activeTag && list && list.getBoundingClientRect().top < 0) {
+      list.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
   function clearTag() {
@@ -193,18 +204,17 @@
         }).join("") + "</div>";
       }
 
-      html += '<article class="post-card reveal in" data-id="' + L.esc(slug) + '"'
+      html += '<article class="post-card reveal in" style="--cat:' + L.esc(L.sectionColor(cat)) + '" data-id="' + L.esc(slug) + '"'
         + ' data-tags="' + L.esc(tags.join(",")) + '"'
         + ' data-categoria="' + L.esc(cat) + '"'
         + ' data-title="' + L.esc(title.toLowerCase()) + '"'
         + ' data-search="' + L.esc(searchStr) + '"'
         + ' data-date="' + L.esc(dateISO) + '"'
         + ' data-url="' + L.esc(url) + '">'
-        + '<div class="post-body">'
-        + '<h2 class="post-title"><a href="' + L.esc(url) + '">' + L.esc(title) + "</a></h2>"
         + (p.capa_url
-            ? '<figure class="post-card-figure"><img src="' + L.esc(p.capa_url) + '" alt="' + L.esc(title) + '"></figure>'
+            ? '<figure class="post-card-figure"><img src="' + L.esc(p.capa_url) + '" alt="" loading="lazy" decoding="async"></figure>'
             : "")
+        + '<div class="post-body">'
         + '<div class="post-meta">'
         + '<svg class="ic ic-sm" aria-hidden="true"><use href="#i-calendar"/></svg>'
         + '<time datetime="' + L.esc(dateISO) + '">' + L.esc(dateBR) + "</time>"
@@ -214,8 +224,9 @@
         + '<span class="sep">·</span>'
         + '<span class="post-cat" style="color:' + L.sectionColor(cat) + '">' + L.esc(L.sectionLabel(cat)) + "</span>"
         + "</div>"
-        + tagsHtml
+        + '<h2 class="post-title"><a href="' + L.esc(url) + '">' + L.esc(title) + "</a></h2>"
         + '<p class="post-excerpt">' + L.esc(resumo) + "</p>"
+        + tagsHtml
         + '<div class="post-foot"><a class="read-link" href="' + L.esc(url) + '">Ler publicação <svg class="ic ic-sm" aria-hidden="true"><use href="#i-arr-r"/></svg></a></div>'
         + "</div></article>";
     });

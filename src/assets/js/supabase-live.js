@@ -37,12 +37,12 @@
   }
 
   var COLORS = {
-    noticia: "#54B8FF",
-    comunicado: "#FF7A48",
-    formacao: "#3BD6B4",
-    evento: "#84DD84",
-    material: "#FFB454",
-    projeto: "#B79CFF",
+    noticia: "#2563EB",
+    comunicado: "#DC2626",
+    formacao: "#0D9488",
+    evento: "#16A34A",
+    material: "#D97706",
+    projeto: "#7C3AED",
   };
   var LABELS = {
     noticia: "Notícia",
@@ -52,7 +52,7 @@
     material: "Material",
     projeto: "Projeto",
   };
-  function sectionColor(c) { return COLORS[c] || "#54B8FF"; }
+  function sectionColor(c) { return COLORS[c] || "#2563EB"; }
   function sectionLabel(c) { return LABELS[c] || "Publicação"; }
 
   function dateBR(iso) {

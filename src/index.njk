@@ -40,12 +40,11 @@ permalink: /
 
       <div class="posts" id="postsList">
         {% for p in collections.posts %}
-        <article class="post-card reveal" data-id="{{ p.fileSlug }}" data-tags="{{ p.data.tags | realTags | join(',') }}" data-categoria="{{ p.data.categoria }}" data-title="{{ p.data.title | lower }}" data-search="{{ (p.data.title ~ ' ' ~ (p.data.resumo or '') ~ ' ' ~ (p.data.tags | realTags | join(' '))) | lower }}" data-date="{{ p.date | dateISO }}" data-url="{{ p.url }}">
+        <article class="post-card reveal{% if loop.first %} is-featured{% endif %}" style="--cat:{{ p.data.categoria | sectionColor }}" data-id="{{ p.fileSlug }}" data-tags="{{ p.data.tags | realTags | join(',') }}" data-categoria="{{ p.data.categoria }}" data-title="{{ p.data.title | lower }}" data-search="{{ (p.data.title ~ ' ' ~ (p.data.resumo or '') ~ ' ' ~ (p.data.tags | realTags | join(' '))) | lower }}" data-date="{{ p.date | dateISO }}" data-url="{{ p.url }}">
+          {% if p.data.capa_url %}
+          <figure class="post-card-figure"><img src="{{ p.data.capa_url }}" alt="" loading="{% if loop.first %}eager{% else %}lazy{% endif %}" decoding="async"></figure>
+          {% endif %}
           <div class="post-body">
-            <h2 class="post-title"><a href="{{ p.url }}">{{ p.data.title }}</a></h2>
-            {% if p.data.capa_url %}
-            <figure class="post-card-figure"><img src="{{ p.data.capa_url }}" alt="{{ p.data.title }}"></figure>
-            {% endif %}
             <div class="post-meta">
               <svg class="ic ic-sm" aria-hidden="true"><use href="#i-calendar"/></svg>
               <time datetime="{{ p.date | dateISO }}">{{ p.date | dateBR }}</time>
@@ -55,13 +54,14 @@ permalink: /
               <span class="sep">·</span>
               <span class="post-cat" style="color:{{ p.data.categoria | sectionColor }}">{{ p.data.categoria | sectionLabel }}</span>
             </div>
+            <h2 class="post-title"><a href="{{ p.url }}">{{ p.data.title }}</a></h2>
+            <p class="post-excerpt">{{ p.data.resumo }}</p>
             {% set cardTags = p.data.tags | realTags %}
             {% if cardTags and cardTags.length %}
             <div class="post-tags">
               {% for tag in cardTags %}<button class="chip hue-{{ tag | tagHue }}" data-tag="{{ tag }}"><span class="dot"></span>{{ tag }}</button>{% endfor %}
             </div>
             {% endif %}
-            <p class="post-excerpt">{{ p.data.resumo }}</p>
             <div class="post-foot">
               <a class="read-link" href="{{ p.url }}">Ler publicação <svg class="ic ic-sm" aria-hidden="true"><use href="#i-arr-r"/></svg></a>
             </div>

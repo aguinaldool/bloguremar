@@ -372,20 +372,20 @@
   gap: 6px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--amber);
-  background: rgba(255, 180, 84, 0.1);
-  border: 1px solid rgba(255, 180, 84, 0.35);
+  color: #B45309;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(217, 119, 6, 0.4);
   border-radius: 99px;
   padding: 4px 10px;
   transition: 0.15s;
 }
-.filter-chip:hover { background: rgba(255, 180, 84, 0.2); }
+.filter-chip:hover { background: rgba(245, 158, 11, 0.22); }
 .filter-chip.blue {
-  color: var(--blue);
-  background: rgba(84, 184, 255, 0.1);
-  border-color: rgba(84, 184, 255, 0.35);
+  color: var(--color-blue);
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(37, 99, 235, 0.4);
 }
-.filter-chip.blue:hover { background: rgba(84, 184, 255, 0.2); }
+.filter-chip.blue:hover { background: rgba(59, 130, 246, 0.2); }
 .link-clear {
   font-size: 12px;
   color: var(--color-muted);
@@ -443,32 +443,53 @@
   box-shadow: 0 0 0 3px rgba(255, 180, 84, 0.14);
 }
 
-/* lista de posts */
-.posts { display: flex; flex-direction: column; gap: 24px; }
+/* ------------------------------------------------------------
+   Lista de posts — grade de 2 colunas
+   O .main-col é um "container": a grade reage à largura real da
+   coluna (e não da tela), pois a sidebar ocupa parte do espaço.
+   ------------------------------------------------------------ */
+.main-col { container-type: inline-size; container-name: feed; }
+#publicacoes { scroll-margin-top: calc(var(--header-h) + 16px); }
+
+.posts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
 .post-card {
+  --cat: var(--color-blue);              /* cor da categoria (definida inline) */
+  position: relative;
+  display: flex;
+  flex-direction: column;
   background: var(--color-surface);
-  border: 1px solid var(--color-line);
+  border: 1px solid #D1D5DB;
+  border-top: 4px solid var(--cat);      /* faixa colorida da categoria */
   border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgb(17 24 39 / 0.06), 0 10px 24px -14px rgb(17 24 39 / 0.28);
   overflow: hidden;
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s, border-color 0.25s;
 }
 
 /* Capas com proporção fixa: qualquer imagem colada no admin ocupa
-   exatamente o mesmo espaço, independente das dimensões originais. */
+   exatamente o mesmo espaço, independente das dimensões originais.
+   Para nunca cortar a imagem (ex.: cartazes com texto), defina
+   --cover-fit: contain em :root. */
 .post-card-figure {
-  margin: 12px 0 2px;
+  margin: 0;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-radius: var(--radius);
   background: var(--cover-bg);
+  border-bottom: 1px solid var(--color-line);
 }
 
 .post-card-figure img {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: contain;
-  object-position: center;
+  object-fit: var(--cover-fit, cover);
+  object-position: center top;
 }
 /* Filtro por tag: esconde os posts que não correspondem */
 .post-card.is-hidden {
@@ -477,20 +498,80 @@
 
 .post-card:hover {
   transform: translateY(-3px);
-  border-color: #C2A86E;
-  box-shadow: var(--shadow);
+  border-color: var(--cat);
+  border-top-color: var(--cat);
+  box-shadow: var(--shadow-lg);
 }
-.post-body { padding: 20px 24px 18px; }
+.post-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 18px 22px 16px;
+}
 .post-title {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 25px;
-  line-height: 1.22;
+  font-size: 21px;
+  line-height: 1.25;
   letter-spacing: -0.005em;
-  margin: 0;
+  margin: 8px 0 0;
 }
 .post-title a { color: var(--color-ink); }
-.post-title a:hover { color: var(--color-amber); }
+.post-title a:hover { color: var(--color-blue); }
+/* Card inteiro clicável (o link do título cobre todo o card) */
+.post-title a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.post-title a:focus-visible { outline: none; }
+.post-title a:focus-visible::after { outline: 3px solid var(--color-blue); outline-offset: -3px; border-radius: var(--radius); }
+.post-tags, .read-link { position: relative; z-index: 2; }   /* continuam clicáveis */
+
+/* Post em destaque (mais recente): ocupa a linha inteira */
+.post-card.is-featured {
+  grid-column: 1 / -1;
+  flex-direction: row;
+}
+.post-card.is-featured .post-card-figure {
+  flex: 0 0 46%;
+  aspect-ratio: auto;
+  min-height: 300px;
+  border-bottom: 0;
+  border-right: 1px solid var(--color-line);
+}
+.post-card.is-featured .post-body {
+  justify-content: center;
+  padding: 28px 32px 24px;
+}
+.post-card.is-featured .post-body::before {
+  content: "Mais recente";
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--cat);
+  border-radius: 99px;
+  padding: 3px 10px;
+  margin-bottom: 4px;
+}
+.post-card.is-featured .post-title { font-size: 30px; line-height: 1.18; }
+.post-card.is-featured .post-excerpt { font-size: 16px; -webkit-line-clamp: 4; line-clamp: 4; }
+
+@container feed (max-width: 700px) {
+  .post-card.is-featured { flex-direction: column; }
+  .post-card.is-featured .post-card-figure {
+    flex: none;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .post-card.is-featured .post-body { padding: 20px 22px 18px; }
+  .post-card.is-featured .post-title { font-size: 25px; }
+}
+@container feed (max-width: 560px) {
+  .posts { grid-template-columns: 1fr; }
+}
 .post-meta {
   display: flex;
   align-items: center;
@@ -499,12 +580,12 @@
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--color-ink-soft);
-  margin-top: 8px;
+  margin-top: 0;
 }
 .post-meta .ic { color: var(--color-amber); }
 .post-meta .sep { color: var(--color-muted); }
 .post-meta .post-cat { font-weight: 600; }
-.post-tags { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 13px; }
+.post-tags { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 14px; }
 .chip {
   display: inline-flex;
   align-items: center;
@@ -540,24 +621,32 @@
 .post-excerpt {
   color: var(--color-ink-soft);
   font-size: 14.5px;
-  margin-top: 13px;
+  margin: 10px 0 0;
   line-height: 1.55;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
 }
 .post-foot {
   display: flex;
   align-items: center;
   gap: 10px;
   border-top: 1px dashed var(--color-line);
-  margin-top: 16px;
-  padding-top: 14px;
+  margin-top: auto;            /* alinha os rodapés dos cards da mesma linha */
+  padding-top: 12px;
 }
+.post-tags + .post-foot, .post-excerpt + .post-foot { margin-top: auto; }
+.post-body > .post-tags { margin-bottom: 16px; }
+.post-body > .post-excerpt:last-of-type { margin-bottom: 16px; }
 .read-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--color-amber);
+  color: #B45309;
   padding: 6px 2px;
   transition: gap 0.2s;
 }
@@ -736,12 +825,12 @@
 }
 
 /* reveal ao rolar */
-.reveal {
+.js .reveal {
   opacity: 0;
   transform: translateY(16px);
   transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.reveal.in { opacity: 1; transform: none; }
+.js .reveal.in { opacity: 1; transform: none; }
 .posts .reveal:nth-child(2) { transition-delay: 0.07s; }
 .posts .reveal:nth-child(3) { transition-delay: 0.12s; }
 .posts .reveal:nth-child(4) { transition-delay: 0.15s; }
@@ -762,12 +851,12 @@
   .page { padding-left: 16px; padding-right: 16px; }
   .hero--home { padding-top: 22px; }
   .hero-stats .stat { flex: 1; min-width: 100px; padding: 10px 13px; }
-  .post-body { padding: 17px 18px 15px; }
-  .post-title { font-size: 21px; }
+  .post-body { padding: 16px 18px 14px; }
+  .post-title { font-size: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .stage { opacity: 1; animation: none; }
-  .reveal { opacity: 1; transform: none; }
+  .js .reveal { opacity: 1; transform: none; }
 }
 
 /* ponto das tags na barra lateral */
@@ -795,3 +884,6 @@
 @media (max-width: 920px) {
   .mobile-tags { display: flex; }
 }
+
+/* Fundo da home um pouco mais escuro: os cards brancos ganham contraste */
+body.home { background-color: #F1F3F6; }
