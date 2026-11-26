@@ -140,6 +140,23 @@ const COVER_HUE = { noticia: "blue", comunicado: "orange", formacao: "teal", eve
 const COVER_STYLE = ["contornos", "quadricula", "hidrografia", "cordilheira"];
 
 module.exports = function (eleventyConfig) {
+  // Markdown: URLs soltas no texto (https://..., www...., e-mails) viram links
+  // clicáveis; links externos abrem em nova aba.
+  const markdownIt = require("markdown-it");
+  const md = markdownIt({ html: true, linkify: true });
+  const defaultLinkOpen =
+    md.renderer.rules.link_open ||
+    ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options));
+  md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
+    const href = tokens[idx].attrGet("href") || "";
+    if (/^https?:\/\//i.test(href)) {
+      tokens[idx].attrSet("target", "_blank");
+      tokens[idx].attrSet("rel", "noopener noreferrer");
+    }
+    return defaultLinkOpen(tokens, idx, options, env, self);
+  };
+  eleventyConfig.setLibrary("md", md);
+
   // Plugins
   eleventyConfig.addPlugin(rssPlugin);
 

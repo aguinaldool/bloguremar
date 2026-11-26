@@ -733,6 +733,7 @@ li {
 
 .article-body a {
   color: var(--color-blue);
+  overflow-wrap: anywhere;   /* URLs longas não estouram a largura */
   text-decoration: underline;
   text-decoration-color: color-mix(in srgb, var(--color-blue) 40%);
   text-underline-offset: 2px;
